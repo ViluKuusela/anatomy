@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="bone_highlight_alpha" type="dimen">0.5</item>
+</resources>
