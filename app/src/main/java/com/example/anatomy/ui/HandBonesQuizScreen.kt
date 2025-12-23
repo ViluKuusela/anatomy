@@ -10,13 +10,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.anatomy.data.Bone
 import com.example.anatomy.data.BoneRepository
+import com.example.anatomy.data.Language
 
 @Composable
 fun HandBonesQuizScreen() {
 
     val bones = BoneRepository.handBones
+    val currentLanguage = Language.LATIN
     var currentBone by remember { mutableStateOf(bones.random()) }
     var selectedAnswer by remember { mutableStateOf<String?>(null) }
+    val correctAnswerText = currentBone.getName(currentLanguage)
 
     val options = remember(currentBone) {
         (bones - currentBone)
@@ -35,7 +38,7 @@ fun HandBonesQuizScreen() {
 
         Image(
             painter = painterResource(currentBone.drawableRes),
-            contentDescription = currentBone.latinName,
+            contentDescription = currentBone.getName(currentLanguage),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(300.dp)
@@ -45,10 +48,10 @@ fun HandBonesQuizScreen() {
 
         options.forEach { bone ->
             AnswerButton(
-                text = bone.latinName,
-                correctAnswer = currentBone.latinName,
+                text = bone.getName(currentLanguage),
+                correctAnswer = currentBone.getName(currentLanguage),
                 selectedAnswer = selectedAnswer,
-                onClick = { selectedAnswer = bone.latinName }
+                onClick = { selectedAnswer = bone.getName(currentLanguage) }
             )
         }
 
@@ -57,10 +60,24 @@ fun HandBonesQuizScreen() {
         if (selectedAnswer != null) {
             Button(onClick = {
                 selectedAnswer = null
-                currentBone = bones.random()
+                currentBone = getNextBone(bones, currentBone)
             }) {
                 Text("Next")
             }
         }
     }
+}
+
+fun getNextBone(
+    bones: List<Bone>,
+    currentBone: Bone
+): Bone {
+    if (bones.size <= 1) return currentBone
+
+    var next: Bone
+    do {
+        next = bones.random()
+    } while (next.id == currentBone.id)
+
+    return next
 }

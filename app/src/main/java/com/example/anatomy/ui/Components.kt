@@ -1,5 +1,6 @@
 package com.example.anatomy.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -31,8 +32,9 @@ fun AnswerButton(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         enabled = selectedAnswer == null,
-        colors = ButtonDefaults.buttonColors(containerColor = backgroundColor)
+        colors = ButtonDefaults.buttonColors(disabledContainerColor = backgroundColor)
     ) {
+        Log.d("mytag","test $text $backgroundColor")
         Text(text)
     }
 }
