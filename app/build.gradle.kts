@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.androidx.appcompat.resources)
     implementation(libs.androidx.compose.foundation)
 	implementation("com.google.accompanist:accompanist-drawablepainter:0.34.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -60,5 +61,6 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-	
+
+
 }

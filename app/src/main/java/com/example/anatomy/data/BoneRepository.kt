@@ -1,6 +1,7 @@
 package com.example.anatomy.data
 
 import com.example.anatomy.R
+import com.example.anatomy.ui.language.Language
 
 object BoneRepository {
 
@@ -12,7 +13,7 @@ object BoneRepository {
                 Language.ENGLISH to "Ulna",
                 Language.FINNISH to "Kyynärluu"
             ),
-            drawableRes = R.drawable.hand_bones_ulna
+            highlightDrawableRes = R.drawable.hand_bones_ulna
         ),
         Bone(
             id = "radius",
@@ -21,7 +22,7 @@ object BoneRepository {
                 Language.ENGLISH to "Radius",
                 Language.FINNISH to "Värttinäluu"
             ),
-            drawableRes = R.drawable.hand_bones_radius
+            highlightDrawableRes = R.drawable.hand_bones_radius
         ),
         Bone(
             id = "scaphoideum",
@@ -30,7 +31,7 @@ object BoneRepository {
                 Language.ENGLISH to "Scaphoid",
                 Language.FINNISH to "Veneluu"
             ),
-            drawableRes = R.drawable.hand_bones_scaphoideum
+            highlightDrawableRes = R.drawable.hand_bones_scaphoideum
         ),
         Bone(
             id = "lunatum",
@@ -39,7 +40,7 @@ object BoneRepository {
                 Language.ENGLISH to "Lunate",
                 Language.FINNISH to "Puolikuuluu"
             ),
-            drawableRes = R.drawable.hand_bones_lunatum
+            highlightDrawableRes = R.drawable.hand_bones_lunatum
         )
     )
 }
