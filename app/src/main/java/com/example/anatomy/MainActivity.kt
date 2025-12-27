@@ -4,7 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.example.anatomy.ui.quiz.HandBonesQuizScreen
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.anatomy.ui.settings.SettingsScreen
+import com.example.anatomy.ui.settings.SettingsViewModel
+import com.example.anatomy.ui.settings.SettingsViewModelFactory
 import com.example.anatomy.ui.theme.AnatomyTheme
 
 class MainActivity : ComponentActivity() {
@@ -15,8 +20,19 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             AnatomyTheme {
-                HandBonesQuizScreen()
+                AppRoot()
             }
         }
     }
+}
+
+@Composable
+fun AppRoot() {
+    val context = LocalContext.current
+
+    val settingsViewModel: SettingsViewModel = viewModel(
+        factory = SettingsViewModelFactory(context)
+    )
+
+    SettingsScreen(viewModel = settingsViewModel)
 }
