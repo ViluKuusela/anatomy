@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.*
-
 import com.example.anatomy.data.BoneRepository
 import com.example.anatomy.ui.components.AnswerButton
 import com.example.anatomy.ui.components.BoneImage
@@ -17,35 +16,52 @@ import com.example.anatomy.ui.language.Language
 import com.example.anatomy.ui.settings.SettingsViewModel
 import kotlinx.coroutines.delay
 
+/**
+ * This composable function represents the main quiz screen.
+ * It displays the current bone, answer options, and progress.
+ *
+ * @param anatomyArea The selected anatomy area for the quiz (e.g., "Hand", "Foot").
+ * @param language The selected language for the bone names.
+ * @param settingsViewModel The ViewModel for accessing and managing user settings.
+ * @param onOpenSettings A callback function to be invoked when the user clicks the settings button.
+ */
 @Composable
-fun HandBonesQuizScreen(
-    language: Language = Language.LATIN,
+fun QuizScreen(
+    anatomyArea: String,
+    language: Language,
     settingsViewModel: SettingsViewModel,
     onOpenSettings: () -> Unit
 ) {
+    // Get the list of bones for the selected anatomy area from the repository.
+    val bones = BoneRepository.getBones(anatomyArea)
+    // Create an instance of the QuizViewModel, providing the list of bones.
     val viewModel: QuizViewModel = viewModel {
-        QuizViewModel(BoneRepository.handBones)
+        QuizViewModel(bones)
     }
 
+    // Collect state from the ViewModels as State objects.
+    // This ensures that the UI recomposes whenever the state changes.
     val session by viewModel.session.collectAsState()
     val selectedAnswer by viewModel.selectedAnswer.collectAsState()
     val settingsState by settingsViewModel.uiState.collectAsState()
 
+    // State for the auto-advance countdown timer.
     var countdown by remember { mutableStateOf(0) }
 
-    // ---------- Auto advance timer ----------
+    // This LaunchedEffect handles the auto-advance feature.
+    // It triggers when an answer is selected or when the auto-advance setting changes.
     LaunchedEffect(selectedAnswer, settingsState) {
         if (settingsState.enableAutoAdvance && selectedAnswer != null) {
             countdown = settingsState.autoNextDelaySeconds
             while (countdown > 0) {
-                delay(1000)
+                delay(1000) // wait for 1 second
                 countdown--
             }
-            viewModel.advance()
+            viewModel.advance() // Automatically move to the next question.
         }
     }
 
-    // ---------- Session complete ----------
+    // If there are no more bones in the session, display the "Session Complete" screen.
     if (session.currentBone == null) {
         Column(
             modifier = Modifier
@@ -60,28 +76,31 @@ fun HandBonesQuizScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Button(onClick = { viewModel.restart(BoneRepository.handBones) }) {
+            // Button to restart the quiz session with the same set of bones.
+            Button(onClick = { viewModel.restart(bones) }) {
                 Text("Restart session")
             }
         }
-        return
+        return // Stop rendering the rest of the quiz screen.
     }
 
     val currentBone = session.currentBone!!
 
-    // ---------- Options ----------
+    // Generate answer options for the current bone.
+    // It includes the correct bone and three other random bones from the same list.
     val options = remember(currentBone) {
-        (BoneRepository.handBones - currentBone)
+        (bones - currentBone)
             .shuffled()
             .take(3)
             .plus(currentBone)
             .shuffled()
     }
 
+    // Calculate the quiz progress.
     val answeredCount = session.totalCount - session.remainingBones.size
     val progress = answeredCount.toFloat() / session.totalCount
 
-    // ---------- UI ----------
+    // Main UI layout for the quiz screen.
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -89,7 +108,7 @@ fun HandBonesQuizScreen(
     ) {
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Settings button
+        // Settings button.
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start
@@ -102,7 +121,7 @@ fun HandBonesQuizScreen(
             }
         }
 
-        // Progress bar
+        // Progress bar to show quiz progress.
         LinearProgressIndicator(
             modifier = Modifier
                 .fillMaxWidth()
@@ -121,7 +140,7 @@ fun HandBonesQuizScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Bone image
+        // Image of the bone to be identified.
         BoneImage(
             bone = currentBone,
             modifier = Modifier
@@ -131,7 +150,7 @@ fun HandBonesQuizScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Answer buttons
+        // Display the answer buttons.
         options.forEach { bone ->
             val isSelected = selectedAnswer == bone
             val isCorrect = selectedAnswer != null && bone.id == currentBone.id
@@ -140,7 +159,7 @@ fun HandBonesQuizScreen(
                 text = bone.getName(language),
                 isSelected = isSelected,
                 isCorrect = isCorrect,
-                enabled = selectedAnswer == null,
+                enabled = selectedAnswer == null, // Disable buttons after an answer is selected.
                 onClick = { viewModel.selectAnswer(bone) }
             )
 
@@ -149,7 +168,7 @@ fun HandBonesQuizScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Next button (centered)
+        // The "Next" button is displayed after an answer is selected.
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -162,6 +181,7 @@ fun HandBonesQuizScreen(
                     val isLastQuestion = session.remainingBones.size == 1
                     val nextButtonText = if (isLastQuestion) "Finish" else "Next"
 
+                    // If auto-advance is enabled, show the countdown in the button text.
                     if (settingsState.enableAutoAdvance && selectedAnswer != null) {
                         Text("$nextButtonText ($countdown)")
                     } else {

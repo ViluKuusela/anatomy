@@ -1,38 +1,36 @@
 package com.example.anatomy.data.settings
 
 import android.content.Context
-import androidx.datastore.preferences.core.*
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
-import com.example.anatomy.ui.language.Language
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-private val Context.dataStore by preferencesDataStore("settings")
+private val Context.dataStore by preferencesDataStore(name = "settings")
 
 class SettingsRepository(private val context: Context) {
 
-    private val AUTO_NEXT = booleanPreferencesKey("auto_next")
-    private val AUTO_NEXT_SECONDS = intPreferencesKey("auto_next_seconds")
-    private val LANGUAGE = stringPreferencesKey("language")
-    private val ANSWER_MODE = stringPreferencesKey("answer_mode")
+    private val ENABLE_AUTO_ADVANCE = booleanPreferencesKey("enable_auto_advance")
+    private val AUTO_NEXT_DELAY = intPreferencesKey("auto_next_delay")
 
-    val settings: Flow<Settings> = context.dataStore.data.map { prefs ->
-        Settings(
-            autoNextEnabled = prefs[AUTO_NEXT] ?: true,
-            autoNextSeconds = prefs[AUTO_NEXT_SECONDS] ?: 5,
-            language = Language.valueOf(prefs[LANGUAGE] ?: Language.LATIN.name),
-            answerMode = AnswerMode.valueOf(
-                prefs[ANSWER_MODE] ?: AnswerMode.MULTIPLE_CHOICE.name
-            )
+    val settingsFlow: Flow<SettingsData> = context.dataStore.data.map { prefs ->
+        SettingsData(
+            enableAutoAdvance = prefs[ENABLE_AUTO_ADVANCE] ?: true,
+            autoNextDelaySeconds = prefs[AUTO_NEXT_DELAY] ?: 3
         )
     }
 
-    suspend fun updateSettings(update: Settings) {
+    suspend fun setAutoAdvanceEnabled(enabled: Boolean) {
         context.dataStore.edit { prefs ->
-            prefs[AUTO_NEXT] = update.autoNextEnabled
-            prefs[AUTO_NEXT_SECONDS] = update.autoNextSeconds
-            prefs[LANGUAGE] = update.language.name
-            prefs[ANSWER_MODE] = update.answerMode.name
+            prefs[ENABLE_AUTO_ADVANCE] = enabled
+        }
+    }
+
+    suspend fun setAutoNextDelay(seconds: Int) {
+        context.dataStore.edit { prefs ->
+            prefs[AUTO_NEXT_DELAY] = seconds
         }
     }
 }

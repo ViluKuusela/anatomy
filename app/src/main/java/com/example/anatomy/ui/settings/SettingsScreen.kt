@@ -12,94 +12,45 @@ import com.example.anatomy.ui.language.Language
 
 @Composable
 fun SettingsScreen(
-    viewModel: SettingsViewModel
+    viewModel: SettingsViewModel,
+    onBack: () -> Unit
 ) {
-    val settings by viewModel.settings.collectAsState()
+    val settings by viewModel.uiState.collectAsState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
-    ) {
 
-        Text(
-            text = "Settings",
-            style = MaterialTheme.typography.headlineMedium
-        )
+    Column(modifier = Modifier.padding(16.dp)) {
+        Spacer(modifier = Modifier.height(32.dp))
 
-        // ---------------- Auto-next ----------------
-        SettingSection(title = "Auto next") {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Enable auto advance")
-                Spacer(modifier = Modifier.weight(1f))
-                Switch(
-                    checked = settings.autoNextEnabled,
-                    onCheckedChange = {
-                        viewModel.update(
-                            settings.copy(autoNextEnabled = it)
-                        )
-                    }
-                )
-            }
+        // Auto-advance switch
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Enable Auto-Advance", modifier = Modifier.weight(1f))
+            Switch(
+                checked = settings.enableAutoAdvance,
+                onCheckedChange = { viewModel.setAutoAdvanceEnabled(it) }
+            )
         }
 
-        // ---------------- Timer seconds ----------------
-        SettingSection(title = "Auto next delay (seconds)") {
-            Column {
-                Slider(
-                    value = settings.autoNextSeconds.toFloat(),
-                    onValueChange = {
-                        viewModel.update(
-                            settings.copy(autoNextSeconds = it.toInt())
-                        )
-                    },
-                    valueRange = 1f..10f,
-                    steps = 8,
-                    enabled = settings.autoNextEnabled
-                )
-                Text(
-                    text = "${settings.autoNextSeconds} seconds",
-                    color = if (settings.autoNextEnabled) {
-                        MaterialTheme.colorScheme.onSurface
-                    } else {
-                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-                    }
-                )
-            }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Auto-next delay slider
+        Column {
+            Text("Auto Next Delay: ${settings.autoNextDelaySeconds} sec")
+            Slider(
+                value = settings.autoNextDelaySeconds.toFloat(),
+                onValueChange = { viewModel.setAutoNextDelay(it.toInt()) },
+                valueRange = 1f..10f,
+                steps = 9,
+                enabled = settings.enableAutoAdvance
+            )
         }
 
-        // ---------------- Language ----------------
-        SettingSection(title = "Language") {
-            Language.values().forEach { language ->
-                RadioOption(
-                    text = language.name,
-                    selected = settings.language == language,
-                    onSelect = {
-                        viewModel.update(
-                            settings.copy(language = language)
-                        )
-                    }
-                )
-            }
-        }
+        Spacer(modifier = Modifier.height(24.dp))
 
-        // ---------------- Answer mode ----------------
-        SettingSection(title = "Answer mode") {
-            AnswerMode.values().forEach { mode ->
-                RadioOption(
-                    text = mode.name.replace('_', ' '),
-                    selected = settings.answerMode == mode,
-                    onSelect = {
-                        viewModel.update(
-                            settings.copy(answerMode = mode)
-                        )
-                    }
-                )
-            }
+        Button(onClick = onBack) {
+            Text("Back")
         }
     }
 }
+
