@@ -6,6 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.anatomy.ui.language.Language
 
 /**
@@ -18,15 +19,13 @@ import com.example.anatomy.ui.language.Language
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuizStartScreen(
+    viewModel: QuizStartViewModel,
     onStartQuiz: (String, Language, Boolean) -> Unit
 ) {
-    // State variables for user selections.
-    var selectedAnatomyArea by remember { mutableStateOf("Hand") }
-    var selectedLanguage by remember { mutableStateOf(Language.LATIN) }
-    var isMultipleChoice by remember { mutableStateOf(true) }
+    val uiState by viewModel.uiState.collectAsState()
 
     // List of available anatomy areas for the quiz.
-    val anatomyAreas = listOf("Hand", "Upper Body", "Head", "Foot", "Lower Body")
+    val anatomyAreas = listOf("Head", "Upper Body", "Hand", "Lower Body", "Foot")
 
     // State variables to control the expansion of the dropdown menus.
     var anatomyAreaExpanded by remember { mutableStateOf(false) }
@@ -50,7 +49,7 @@ fun QuizStartScreen(
             onExpandedChange = { anatomyAreaExpanded = !anatomyAreaExpanded }
         ) {
             OutlinedTextField(
-                value = selectedAnatomyArea,
+                value = uiState.anatomyArea,
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("Anatomy Area") },
@@ -68,7 +67,7 @@ fun QuizStartScreen(
                     DropdownMenuItem(
                         text = { Text(area) },
                         onClick = {
-                            selectedAnatomyArea = area
+                            viewModel.setAnatomyArea(area)
                             anatomyAreaExpanded = false
                         }
                     )
@@ -84,7 +83,7 @@ fun QuizStartScreen(
             onExpandedChange = { languageExpanded = !languageExpanded }
         ) {
             OutlinedTextField(
-                value = selectedLanguage.name,
+                value = uiState.language.name,
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("Language") },
@@ -102,7 +101,7 @@ fun QuizStartScreen(
                     DropdownMenuItem(
                         text = { Text(lang.name) },
                         onClick = {
-                            selectedLanguage = lang
+                            viewModel.setLanguage(lang)
                             languageExpanded = false
                         }
                     )
@@ -115,14 +114,14 @@ fun QuizStartScreen(
         // Radio buttons for selecting the answer type.
         Row(verticalAlignment = Alignment.CenterVertically) {
             RadioButton(
-                selected = isMultipleChoice,
-                onClick = { isMultipleChoice = true }
+                selected = uiState.isMultipleChoice,
+                onClick = { viewModel.setIsMultipleChoice(true) }
             )
             Text("Multiple Choice")
             Spacer(modifier = Modifier.width(16.dp))
             RadioButton(
-                selected = !isMultipleChoice,
-                onClick = { isMultipleChoice = false }
+                selected = !uiState.isMultipleChoice,
+                onClick = { viewModel.setIsMultipleChoice(false) }
             )
             Text("Written Answer")
         }
@@ -130,7 +129,7 @@ fun QuizStartScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         // Button to start the quiz with the selected options.
-        Button(onClick = { onStartQuiz(selectedAnatomyArea, selectedLanguage, isMultipleChoice) }) {
+        Button(onClick = { onStartQuiz(uiState.anatomyArea, uiState.language, uiState.isMultipleChoice) }) {
             Text("Start Quiz")
         }
     }

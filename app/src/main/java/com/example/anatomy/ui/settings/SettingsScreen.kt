@@ -1,56 +1,80 @@
 package com.example.anatomy.ui.settings
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.anatomy.data.settings.AnswerMode
-import com.example.anatomy.ui.language.Language
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel,
     onBack: () -> Unit
 ) {
-    val settings by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
-
-    Column(modifier = Modifier.padding(16.dp)) {
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // Auto-advance switch
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("Enable Auto-Advance", modifier = Modifier.weight(1f))
-            Switch(
-                checked = settings.enableAutoAdvance,
-                onCheckedChange = { viewModel.setAutoAdvanceEnabled(it) }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Settings") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
             )
         }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp)
+        ) {
+            // Auto-advance setting
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("Enable auto-advance")
+                Switch(
+                    checked = uiState.enableAutoAdvance,
+                    onCheckedChange = { viewModel.setAutoAdvanceEnabled(it) }
+                )
+            }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        // Auto-next delay slider
-        Column {
-            Text("Auto Next Delay: ${settings.autoNextDelaySeconds} sec")
+            // Auto-next delay setting
+            Text("Auto-next delay: ${uiState.autoNextDelaySeconds} seconds")
             Slider(
-                value = settings.autoNextDelaySeconds.toFloat(),
+                value = uiState.autoNextDelaySeconds.toFloat(),
                 onValueChange = { viewModel.setAutoNextDelay(it.toInt()) },
                 valueRange = 1f..10f,
-                steps = 9,
-                enabled = settings.enableAutoAdvance
+                steps = 8,
+                enabled = uiState.enableAutoAdvance
             )
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(onClick = onBack) {
-            Text("Back")
         }
     }
 }
-

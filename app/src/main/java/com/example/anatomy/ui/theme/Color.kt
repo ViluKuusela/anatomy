@@ -11,3 +11,4 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 val CorrectAnswerColor = Color(0xFF56B763)
+val FalseAnswerColor = Color(0xFFD32F2F)

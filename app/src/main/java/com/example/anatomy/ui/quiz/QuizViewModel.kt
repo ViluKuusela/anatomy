@@ -3,59 +3,98 @@ package com.example.anatomy.ui.quiz
 import androidx.lifecycle.ViewModel
 import com.example.anatomy.data.Bone
 import com.example.anatomy.data.QuizSession
+import com.example.anatomy.ui.language.Language
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
+// Represents the result of an answer submission.
+sealed class AnswerResult {
+    // The user has not answered the question yet.
+    object Unanswered : AnswerResult()
+
+    // The user has answered the question.
+    data class Answered(val wasCorrect: Boolean, val selectedOption: Bone? = null) : AnswerResult()
+}
+
 class QuizViewModel(
-    bones: List<Bone>
+    private val allBones: List<Bone> // Keep a private copy of all bones for the session
 ) : ViewModel() {
 
     private val _session = MutableStateFlow(
         QuizSession(
-            remainingBones = bones.shuffled(),
-            currentBone = bones.firstOrNull(),
+            remainingBones = allBones.shuffled(),
+            currentBone = allBones.firstOrNull(),
             correctCount = 0,
-            totalCount = bones.size
+            totalCount = allBones.size
         )
     )
     val session: StateFlow<QuizSession> = _session
 
-    private val _selectedAnswer = MutableStateFlow<Bone?>(null)
-    val selectedAnswer: StateFlow<Bone?> = _selectedAnswer
+    private val _answerResult = MutableStateFlow<AnswerResult>(AnswerResult.Unanswered)
+    val answerResult: StateFlow<AnswerResult> = _answerResult
 
+    /**
+     * Processes a user's selection in a multiple-choice question.
+     */
     fun selectAnswer(bone: Bone) {
-        if (_selectedAnswer.value != null) return
+        if (_answerResult.value is AnswerResult.Answered) return
 
-        _selectedAnswer.value = bone
-
-        if (bone.id == _session.value.currentBone?.id) {
+        val isCorrect = bone.id == _session.value.currentBone?.id
+        if (isCorrect) {
             _session.update {
                 it.copy(correctCount = it.correctCount + 1)
             }
         }
+        _answerResult.value = AnswerResult.Answered(isCorrect, bone)
     }
 
+    /**
+     * Processes a user's written answer.
+     */
+    fun submitWrittenAnswer(answer: String, language: Language) {
+        if (_answerResult.value is AnswerResult.Answered) return
+
+        val currentBone = _session.value.currentBone ?: return
+        val correctAnswer = currentBone.getName(language)
+
+        val isCorrect = answer.equals(correctAnswer, ignoreCase = true)
+
+        if (isCorrect) {
+            _session.update { it.copy(correctCount = it.correctCount + 1) }
+        }
+
+        _answerResult.value = AnswerResult.Answered(isCorrect)
+    }
+
+    /**
+     * Advances to the next question in the quiz.
+     */
     fun advance() {
-        val rem = _session.value.remainingBones.toMutableList()
+        val remaining = _session.value.remainingBones.toMutableList()
 
         // Remove current bone from the list
-        _session.value.currentBone?.let { rem.remove(it) }
+        _session.value.currentBone?.let { remaining.remove(it) }
 
-        _session.value = _session.value.copy(
-            remainingBones = rem,
-            currentBone = rem.firstOrNull(),
-        )
-        _selectedAnswer.value = null
+        _session.update {
+            it.copy(
+                remainingBones = remaining,
+                currentBone = remaining.firstOrNull(),
+            )
+        }
+        _answerResult.value = AnswerResult.Unanswered
     }
 
-    fun restart(allBones: List<Bone>) {
+    /**
+     * Restarts the quiz with the full list of bones.
+     */
+    fun restart() {
         _session.value = QuizSession(
             remainingBones = allBones.shuffled(),
             currentBone = allBones.firstOrNull(),
             correctCount = 0,
             totalCount = allBones.size
         )
-        _selectedAnswer.value = null
+        _answerResult.value = AnswerResult.Unanswered
     }
 }

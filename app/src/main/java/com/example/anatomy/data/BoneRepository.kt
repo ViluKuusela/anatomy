@@ -58,7 +58,7 @@ object BoneRepository {
                 Language.ENGLISH to "Talus",
                 Language.FINNISH to "Telaluu"
             ),
-            highlightDrawableRes = 0 // Placeholder. You need to create the drawable.
+            highlightDrawableRes = R.drawable.foot_bones_talus
         ),
         Bone(
             id = "calcaneus",
@@ -67,7 +67,7 @@ object BoneRepository {
                 Language.ENGLISH to "Calcaneus",
                 Language.FINNISH to "Kantaluu"
             ),
-            highlightDrawableRes = 0 // Placeholder. You need to create the drawable.
+            highlightDrawableRes = R.drawable.foot_bones_calcaneus
         ),
         Bone(
             id = "navicular",
@@ -76,7 +76,16 @@ object BoneRepository {
                 Language.ENGLISH to "Navicular",
                 Language.FINNISH to "Veneluu"
             ),
-            highlightDrawableRes = 0 // Placeholder. You need to create the drawable.
+            highlightDrawableRes = R.drawable.foot_bones_naviculare
+        ),
+        Bone(
+            id = "cuboideum",
+            names = mapOf(
+                Language.LATIN to "Os cuboideum",
+                Language.ENGLISH to "Cuboid",
+                Language.FINNISH to "Kuutioluu"
+            ),
+            highlightDrawableRes = R.drawable.foot_bones_cuboideum
         )
     )
 

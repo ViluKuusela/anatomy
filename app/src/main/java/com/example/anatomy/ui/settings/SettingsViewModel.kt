@@ -2,30 +2,24 @@ package com.example.anatomy.ui.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.anatomy.data.settings.SettingsData
 import com.example.anatomy.data.settings.SettingsRepository
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
     private val repository: SettingsRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(SettingsUiState())
-    val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            repository.settingsFlow.collect { settings: SettingsData ->
-                _uiState.value = SettingsUiState(
-                    enableAutoAdvance = settings.enableAutoAdvance,
-                    autoNextDelaySeconds = settings.autoNextDelaySeconds
-                )
-            }
-        }
-    }
+    val uiState: StateFlow<SettingsUiState> = repository.settingsFlow.map {
+        SettingsUiState(it.enableAutoAdvance, it.autoNextDelaySeconds)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = SettingsUiState()
+    )
 
     fun setAutoAdvanceEnabled(enabled: Boolean) {
         viewModelScope.launch {

@@ -13,20 +13,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.example.anatomy.data.Bone
 import com.example.anatomy.ui.theme.CorrectAnswerColor
+import com.example.anatomy.ui.theme.FalseAnswerColor
 
 @Composable
 fun BoneImage(
     bone: Bone,
-    modifier: Modifier = Modifier.Companion
+    modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier,
-        contentAlignment = Alignment.Companion.Center
+        contentAlignment = Alignment.Center
     ) {
         Image(
             painter = painterResource(id = bone.highlightDrawableRes),
             contentDescription = bone.id,
-            modifier = Modifier.Companion.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
@@ -41,7 +42,7 @@ fun AnswerButton(
 ) {
     val colors = ButtonDefaults.buttonColors(
         disabledContainerColor = when {
-            isSelected && !isCorrect -> MaterialTheme.colorScheme.error
+            isSelected && !isCorrect -> FalseAnswerColor
             isCorrect -> CorrectAnswerColor
             else -> MaterialTheme.colorScheme.surfaceVariant
         },
@@ -55,7 +56,7 @@ fun AnswerButton(
         onClick = onClick,
         enabled = enabled,
         colors = colors,
-        modifier = Modifier.Companion.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth()
     ) {
         Text(text)
     }
