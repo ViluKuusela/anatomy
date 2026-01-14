@@ -25,7 +25,7 @@ fun QuizStartScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     // List of available anatomy areas for the quiz.
-    val anatomyAreas = listOf("Head", "Upper Body", "Hand", "Lower Body", "Foot")
+    val anatomyAreas = listOf("Skull", "Upper Body", "Hand", "Lower Body", "Foot")
 
     // State variables to control the expansion of the dropdown menus.
     var anatomyAreaExpanded by remember { mutableStateOf(false) }

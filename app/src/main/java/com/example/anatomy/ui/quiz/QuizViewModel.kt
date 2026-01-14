@@ -24,7 +24,7 @@ class QuizViewModel(
     private val _session = MutableStateFlow(
         QuizSession(
             remainingBones = allBones.shuffled(),
-            currentBone = allBones.firstOrNull(),
+            currentBone = allBones.shuffled().firstOrNull(),
             correctCount = 0,
             totalCount = allBones.size
         )
@@ -34,17 +34,25 @@ class QuizViewModel(
     private val _answerResult = MutableStateFlow<AnswerResult>(AnswerResult.Unanswered)
     val answerResult: StateFlow<AnswerResult> = _answerResult
 
+    // Track bones that were answered incorrectly
+    private val _incorrectBones = MutableStateFlow<List<Bone>>(emptyList())
+    val incorrectBones: StateFlow<List<Bone>> = _incorrectBones
+
     /**
      * Processes a user's selection in a multiple-choice question.
      */
     fun selectAnswer(bone: Bone) {
         if (_answerResult.value is AnswerResult.Answered) return
 
-        val isCorrect = bone.id == _session.value.currentBone?.id
+        val currentBone = _session.value.currentBone ?: return
+        val isCorrect = bone.id == currentBone.id
+        
         if (isCorrect) {
             _session.update {
                 it.copy(correctCount = it.correctCount + 1)
             }
+        } else {
+            _incorrectBones.update { it + currentBone }
         }
         _answerResult.value = AnswerResult.Answered(isCorrect, bone)
     }
@@ -62,6 +70,8 @@ class QuizViewModel(
 
         if (isCorrect) {
             _session.update { it.copy(correctCount = it.correctCount + 1) }
+        } else {
+            _incorrectBones.update { it + currentBone }
         }
 
         _answerResult.value = AnswerResult.Answered(isCorrect)
@@ -91,10 +101,28 @@ class QuizViewModel(
     fun restart() {
         _session.value = QuizSession(
             remainingBones = allBones.shuffled(),
-            currentBone = allBones.firstOrNull(),
+            currentBone = allBones.shuffled().firstOrNull(),
             correctCount = 0,
             totalCount = allBones.size
         )
         _answerResult.value = AnswerResult.Unanswered
+        _incorrectBones.value = emptyList()
+    }
+
+    /**
+     * Starts a new session containing only the bones answered incorrectly.
+     */
+    fun reviewIncorrect() {
+        val bonesToReview = _incorrectBones.value.shuffled()
+        if (bonesToReview.isEmpty()) return
+
+        _session.value = QuizSession(
+            remainingBones = bonesToReview,
+            currentBone = bonesToReview.firstOrNull(),
+            correctCount = 0,
+            totalCount = bonesToReview.size
+        )
+        _answerResult.value = AnswerResult.Unanswered
+        _incorrectBones.value = emptyList() // Reset incorrect bones for the new review session
     }
 }

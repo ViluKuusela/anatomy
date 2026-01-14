@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.*
@@ -50,6 +51,7 @@ fun QuizScreen(
     val session by viewModel.session.collectAsState()
     val answerResult by viewModel.answerResult.collectAsState()
     val settingsState by settingsViewModel.uiState.collectAsState()
+    val incorrectBones by viewModel.incorrectBones.collectAsState()
 
     // State for the auto-advance countdown timer.
     var countdown by remember { mutableStateOf(0) }
@@ -107,13 +109,30 @@ fun QuizScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Button(onClick = { viewModel.restart() }) {
-                Text("Restart Session")
+            Button(
+                onClick = { viewModel.restart() },
+                modifier = Modifier.fillMaxWidth(0.7f)
+            ) {
+                Text("Restart Full Session")
+            }
+
+            if (incorrectBones.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = { viewModel.reviewIncorrect() },
+                    modifier = Modifier.fillMaxWidth(0.7f),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+                ) {
+                    Text("Review Incorrect (${incorrectBones.size})")
+                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Button(onClick = onFinish) {
+            OutlinedButton(
+                onClick = onFinish,
+                modifier = Modifier.fillMaxWidth(0.7f)
+            ) {
                 Text("Finish Session")
             }
         }
@@ -186,9 +205,16 @@ fun QuizScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Determine the highlight color based on the answer result.
+        val highlightColor = when (val result = answerResult) {
+            is AnswerResult.Answered -> if (result.wasCorrect) CorrectAnswerColor else FalseAnswerColor
+            is AnswerResult.Unanswered -> CorrectAnswerColor // Use green for the question mask as requested
+        }
+
         // Image of the bone to be identified.
         BoneImage(
             bone = currentBone,
+            highlightColor = highlightColor,
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
