@@ -123,6 +123,6 @@ class QuizViewModel(
             totalCount = bonesToReview.size
         )
         _answerResult.value = AnswerResult.Unanswered
-        _incorrectBones.value = emptyList() // Reset incorrect bones for the new review session
+        _incorrectBones.value = emptyList()
     }
 }

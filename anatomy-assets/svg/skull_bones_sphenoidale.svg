@@ -10,7 +10,7 @@
    overflow="visible"
    enable-background="new 0 0 536.764 308.853"
    xml:space="preserve"
-   sodipodi:docname="skull_bones_.sphenoidale.svg"
+   sodipodi:docname="skull_bones_sphenoidale.svg"
    inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -25,12 +25,12 @@
    inkscape:pageopacity="0.0"
    inkscape:pagecheckerboard="0"
    inkscape:deskcolor="#d1d1d1"
-   inkscape:zoom="2.6128935"
-   inkscape:cx="228.48233"
-   inkscape:cy="172.41422"
-   inkscape:window-width="1920"
-   inkscape:window-height="1009"
-   inkscape:window-x="-8"
+   inkscape:zoom="3.7784966"
+   inkscape:cx="268.3607"
+   inkscape:cy="133.25406"
+   inkscape:window-width="2560"
+   inkscape:window-height="1369"
+   inkscape:window-x="1912"
    inkscape:window-y="-8"
    inkscape:window-maximized="1"
    inkscape:current-layer="g285" />
@@ -39,8 +39,28 @@
    id="g285">
 	
 	
-	
-	
+	<g
+   id="g33">
+		
+		<path
+   fill="#FFFFFF"
+   stroke="#000000"
+   stroke-width="0.7797"
+   d="M53.747,111.293c-4.189,1.123-2.579,6.012-1.553,8.741    c2.048,5.438,4.103,7.36,7.567,1.312C58.729,120.102,55.514,110.82,53.747,111.293z"
+   id="path32" />
+		
+	</g>
+	<g
+   id="g36">
+		
+		
+		<path
+   fill="#FFFFFF"
+   stroke="#000000"
+   stroke-width="0.7797"
+   d="M200.024,126.429c-0.104-0.046-0.208-0.1-0.314-0.163    c-3.238-1.888-2.766-9.254-1.812-12.133c0.438-1.328,1.031-2.758,2.055-3.752c0.353-0.341,3.493-1.856,3.47-1.777    c-1.116,4.084,1.741,8.292,1.099,12.458C204.097,123.804,202.593,127.574,200.024,126.429z"
+   id="path36" />
+	</g>
 	
 	<linearGradient
    id="XMLID_12_"
@@ -162,12 +182,6 @@
 	
 	
 	
-	
-	
-	
-	
-	
-	
 	<g
    id="g157">
 		<path
@@ -197,6 +211,12 @@
    d="M347.884,109.067c0,0.355,0,0.71,0,1.065"
    id="path157" />
 	</g>
+	
+	
+	
+	
+	
+	
 	
 	
 	

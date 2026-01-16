@@ -2,6 +2,7 @@ package com.example.anatomy.ui.quiz
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.anatomy.data.settings.QuizMode
 import com.example.anatomy.data.settings.QuizStartUiState
 import com.example.anatomy.data.settings.SettingsRepository
 import com.example.anatomy.ui.language.Language
@@ -16,7 +17,7 @@ class QuizStartViewModel(private val repository: SettingsRepository) : ViewModel
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = QuizStartUiState("Hand", Language.LATIN, true)
+            initialValue = QuizStartUiState("Hand", Language.LATIN, QuizMode.CHOOSE)
         )
 
     fun setAnatomyArea(anatomyArea: String) {
@@ -31,9 +32,9 @@ class QuizStartViewModel(private val repository: SettingsRepository) : ViewModel
         }
     }
 
-    fun setIsMultipleChoice(isMultipleChoice: Boolean) {
+    fun setQuizMode(mode: QuizMode) {
         viewModelScope.launch {
-            repository.setIsMultipleChoice(isMultipleChoice)
+            repository.setQuizMode(mode)
         }
     }
 }

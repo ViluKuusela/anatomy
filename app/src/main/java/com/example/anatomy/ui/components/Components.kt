@@ -2,6 +2,7 @@ package com.example.anatomy.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -12,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.example.anatomy.data.Bone
 import com.example.anatomy.ui.theme.CorrectAnswerColor
@@ -19,33 +21,43 @@ import com.example.anatomy.ui.theme.FalseAnswerColor
 
 /**
  * A composable that displays a bone image, dynamically highlighting a specific part.
- * It layers a base image with a highlight mask, which is tinted with the provided color.
- *
- * @param bone The bone to display, containing the base and mask drawable resources.
- * @param highlightColor The color to use for highlighting the specific bone part.
- * @param modifier Modifier for this composable.
  */
 @Composable
 fun BoneImage(
     bone: Bone,
     highlightColor: Color,
+    errorBone: Bone? = null,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        // Draw the base image (e.g., the full hand).
+        // 1. Draw the base image.
         Image(
             painter = painterResource(id = bone.baseDrawableRes),
             contentDescription = bone.id,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Fit
         )
 
-        // Layer the highlight mask on top and tint it with the highlight color.
+        // 2. Highlight error bone if present
+        if (errorBone != null) {
+            Image(
+                painter = painterResource(id = errorBone.highlightMaskRes),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                colorFilter = ColorFilter.tint(FalseAnswerColor),
+                alpha = 0.5f,
+                contentScale = ContentScale.Fit
+            )
+        }
+
+        // 3. Highlight correct bone
         Image(
             painter = painterResource(id = bone.highlightMaskRes),
-            contentDescription = null, // Decorative
-            modifier = Modifier.fillMaxWidth(),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
             colorFilter = ColorFilter.tint(highlightColor),
-            alpha = 0.5f
+            alpha = 0.5f,
+            contentScale = ContentScale.Fit
         )
     }
 }

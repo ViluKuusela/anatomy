@@ -1,5 +1,8 @@
 package com.example.anatomy.ui.quiz
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -8,316 +11,273 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.createBitmap
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.*
 import com.example.anatomy.data.BoneRepository
+import com.example.anatomy.data.settings.QuizMode
 import com.example.anatomy.ui.components.AnswerButton
 import com.example.anatomy.ui.components.BoneImage
 import com.example.anatomy.ui.language.Language
 import com.example.anatomy.ui.settings.SettingsViewModel
 import com.example.anatomy.ui.theme.CorrectAnswerColor
 import com.example.anatomy.ui.theme.FalseAnswerColor
+import com.example.anatomy.ui.theme.QuestionHighlightColor
 import kotlinx.coroutines.delay
 
 /**
  * This composable function represents the main quiz screen.
- * It displays the current bone, answer options, and progress.
- *
- * @param anatomyArea The selected anatomy area for the quiz (e.g., "Hand", "Foot").
- * @param language The selected language for the bone names.
- * @param isMultipleChoice A boolean that determines if the quiz is multiple choice or written answer.
- * @param settingsViewModel The ViewModel for accessing and managing user settings.
- * @param onOpenSettings A callback function to be invoked when the user clicks the settings button.
- * @param onFinish A callback function to be invoked when the user finishes the session.
  */
 @Composable
 fun QuizScreen(
     anatomyArea: String,
     language: Language,
-    isMultipleChoice: Boolean,
+    quizMode: QuizMode,
     settingsViewModel: SettingsViewModel,
     onOpenSettings: () -> Unit,
     onFinish: () -> Unit
 ) {
-    // Get the list of bones for the selected anatomy area from the repository.
     val bones = BoneRepository.getBones(anatomyArea)
-    // Create an instance of the QuizViewModel, providing the list of bones.
-    val viewModel: QuizViewModel = viewModel {
-        QuizViewModel(bones)
-    }
+    val viewModel: QuizViewModel = viewModel { QuizViewModel(bones) }
+    val context = LocalContext.current
 
-    // Collect state from the ViewModels as State objects.
     val session by viewModel.session.collectAsState()
     val answerResult by viewModel.answerResult.collectAsState()
     val settingsState by settingsViewModel.uiState.collectAsState()
     val incorrectBones by viewModel.incorrectBones.collectAsState()
 
-    // State for the auto-advance countdown timer.
     var countdown by remember { mutableStateOf(0) }
     var showEndSessionDialog by remember { mutableStateOf(false) }
+    var boxSize by remember { mutableStateOf(IntSize.Zero) }
+
+    // Pre-calculate bitmaps for TAP mode hit testing
+    val boneMasks = remember(bones) {
+        bones.associate { bone ->
+            val drawable = ContextCompat.getDrawable(context, bone.highlightMaskRes)!!
+            val bitmap = createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight)
+            val canvas = Canvas(bitmap)
+            drawable.setBounds(0, 0, canvas.width, canvas.height)
+            drawable.draw(canvas)
+            bone.id to bitmap
+        }
+    }
 
     if (showEndSessionDialog) {
         AlertDialog(
             onDismissRequest = { showEndSessionDialog = false },
             title = { Text("End Session") },
-            text = { Text("Are you sure you want to end the current session?") },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showEndSessionDialog = false
-                        onFinish() // Call the onFinish lambda to navigate back
-                    }
-                ) {
-                    Text("Confirm")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { showEndSessionDialog = false }
-                ) {
-                    Text("Cancel")
-                }
-            }
+            confirmButton = { TextButton(onClick = { onFinish() }) { Text("Confirm") } },
+            dismissButton = { TextButton(onClick = { showEndSessionDialog = false }) { Text("Cancel") } }
         )
     }
 
-    // This LaunchedEffect handles the auto-advance feature.
-    LaunchedEffect(answerResult, settingsState) {
+    LaunchedEffect(answerResult) {
         if (settingsState.enableAutoAdvance && answerResult is AnswerResult.Answered) {
             countdown = settingsState.autoNextDelaySeconds
             while (countdown > 0) {
-                delay(1000) // wait for 1 second
+                delay(1000)
                 countdown--
             }
-            viewModel.advance() // Automatically move to the next question.
+            viewModel.advance()
         }
     }
 
-    // If there are no more bones in the session, display the "Session Complete" screen.
     if (session.currentBone == null) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxSize().padding(16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text("Session Complete", style = MaterialTheme.typography.headlineMedium)
-            Spacer(modifier = Modifier.height(8.dp))
             Text("${session.correctCount} / ${session.totalCount} correct")
-
             Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = { viewModel.restart() },
-                modifier = Modifier.fillMaxWidth(0.7f)
-            ) {
+            Button(onClick = { viewModel.restart() }, modifier = Modifier.fillMaxWidth(0.7f)) {
                 Text("Restart Full Session")
             }
-
             if (incorrectBones.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Button(
-                    onClick = { viewModel.reviewIncorrect() },
-                    modifier = Modifier.fillMaxWidth(0.7f),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
-                ) {
+                Button(onClick = { viewModel.reviewIncorrect() }, modifier = Modifier.fillMaxWidth(0.7f), colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)) {
                     Text("Review Incorrect (${incorrectBones.size})")
                 }
             }
-
             Spacer(modifier = Modifier.height(8.dp))
-
-            OutlinedButton(
-                onClick = onFinish,
-                modifier = Modifier.fillMaxWidth(0.7f)
-            ) {
+            OutlinedButton(onClick = onFinish, modifier = Modifier.fillMaxWidth(0.7f)) {
                 Text("Finish Session")
             }
         }
-        return // Stop rendering the rest of the quiz screen.
+        return
     }
 
     val currentBone = session.currentBone!!
-
-    // Generate answer options for the current bone.
+    val result = answerResult as? AnswerResult.Answered
     val options = remember(currentBone) {
-        (bones - currentBone)
-            .shuffled()
-            .take(3)
-            .plus(currentBone)
-            .shuffled()
+        (bones - currentBone).shuffled().take(3).plus(currentBone).shuffled()
     }
+    var writtenAnswer by remember { mutableStateOf("") }
+    LaunchedEffect(currentBone) { writtenAnswer = "" }
 
     val answeredCount = session.totalCount - session.remainingBones.size
     val progress = answeredCount.toFloat() / session.totalCount
 
-    var writtenAnswer by remember { mutableStateOf("") }
-
-    // Reset written answer when the question changes
-    LaunchedEffect(currentBone) {
-        writtenAnswer = ""
-    }
-
-    // Main UI layout for the quiz screen.
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        // Top action buttons: Settings and End Session
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = onOpenSettings) {
-                Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = "Settings"
-                )
-            }
-
-            IconButton(onClick = { showEndSessionDialog = true }) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "End Session"
-                )
-            }
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        // --- HEADER ---
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            IconButton(onClick = onOpenSettings) { Icon(Icons.Default.Settings, "Settings") }
+            IconButton(onClick = { showEndSessionDialog = true }) { Icon(Icons.Default.Close, "End") }
         }
-
-        // Progress bar to show quiz progress.
-        LinearProgressIndicator(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(8.dp),
-            progress = { progress },
-            color = MaterialTheme.colorScheme.primary,
-            trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-        )
-
+        LinearProgressIndicator(modifier = Modifier.fillMaxWidth().height(8.dp), progress = { progress }, color = MaterialTheme.colorScheme.primary, trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
+        
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            "$answeredCount / ${session.totalCount} answered",
+            text = "$answeredCount / ${session.totalCount}",
             style = MaterialTheme.typography.bodyMedium
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Determine the highlight color based on the answer result.
-        val highlightColor = when (val result = answerResult) {
-            is AnswerResult.Answered -> if (result.wasCorrect) CorrectAnswerColor else FalseAnswerColor
-            is AnswerResult.Unanswered -> CorrectAnswerColor // Use green for the question mask as requested
-        }
-
-        // Image of the bone to be identified.
-        BoneImage(
-            bone = currentBone,
-            highlightColor = highlightColor,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        )
-
-        if (isMultipleChoice) {
-            // Display the answer buttons for multiple choice.
-            options.forEach { bone ->
-                val isSelected =
-                    (answerResult as? AnswerResult.Answered)?.selectedOption == bone
-                val isCorrect = answerResult is AnswerResult.Answered && bone.id == currentBone.id
-
-                AnswerButton(
-                    text = bone.getName(language),
-                    isSelected = isSelected,
-                    isCorrect = isCorrect,
-                    enabled = answerResult is AnswerResult.Unanswered, // Disable buttons after an answer is selected.
-                    onClick = { viewModel.selectAnswer(bone) }
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-        } else {
-            // Display the text field for written answers.
-            val isAnswered = answerResult is AnswerResult.Answered
-            val wasCorrect = (answerResult as? AnswerResult.Answered)?.wasCorrect == true
-
-            val textFieldColors = if (isAnswered) {
-                val color = if (wasCorrect) CorrectAnswerColor else FalseAnswerColor
-                OutlinedTextFieldDefaults.colors(
-                    disabledBorderColor = color,
-                    disabledTextColor = color,
-                    disabledLabelColor = color
-                )
-            } else {
-                OutlinedTextFieldDefaults.colors()
-            }
-
-            OutlinedTextField(
-                value = writtenAnswer,
-                onValueChange = { writtenAnswer = it },
-                label = { Text("Enter bone name in ${language.name.lowercase().replaceFirstChar { it.uppercase() }}") },
-                singleLine = true,
-                enabled = !isAnswered,
-                modifier = Modifier.fillMaxWidth(),
-                colors = textFieldColors
-            )
-
-            // Reserve space for the correct/incorrect answer text to prevent layout shifts.
-            Box(modifier = Modifier.defaultMinSize(minHeight = 24.dp)) {
-                if (isAnswered) {
-                    if (wasCorrect) {
-                        Text(
-                            text = "Correct!",
-                            color = CorrectAnswerColor,
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(start = 16.dp, top = 4.dp)
-                        )
-                    } else {
-                        Text(
-                            text = "Correct answer: ${currentBone.getName(language)}",
-                            color = FalseAnswerColor,
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(start = 16.dp, top = 4.dp)
-                        )
-                    }
-                }
+        Spacer(Modifier.height(16.dp))
+        
+        // --- QUESTION HEADER (Fixed height) ---
+        Box(modifier = Modifier.height(60.dp), contentAlignment = Alignment.Center) {
+            if (quizMode == QuizMode.TAP) {
+                Text("Tap ${currentBone.getName(language)}", style = MaterialTheme.typography.headlineSmall)
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        // --- IMAGE AREA (Pixel perfect hit testing) ---
+        val firstBoneRef = bones.firstOrNull()
+        val baseDrawableRef = remember(anatomyArea) {
+            if (firstBoneRef != null) ContextCompat.getDrawable(context, firstBoneRef.baseDrawableRes) else null
+        }
+        val imgWidth = baseDrawableRef?.intrinsicWidth?.toFloat() ?: 1f
+        val imgHeight = baseDrawableRef?.intrinsicHeight?.toFloat() ?: 1f
+        val imgAspectRatio = imgWidth / imgHeight
 
-        // This Box serves as a stable container for the action buttons (Submit/Next).
         Box(
             modifier = Modifier
+                .weight(1f)
                 .fillMaxWidth()
-                .height(48.dp),
+                .onGloballyPositioned { boxSize = it.size }
+                .pointerInput(currentBone, answerResult) {
+                    if (quizMode == QuizMode.TAP && answerResult is AnswerResult.Unanswered) {
+                        detectTapGestures { offset ->
+                            if (boxSize.width > 0 && boxSize.height > 0) {
+                                val containerW = size.width.toFloat()
+                                val containerH = size.height.toFloat()
+                                val containerRatio = containerW / containerH
+                                val (drawnW, drawnH) = if (containerRatio > imgAspectRatio) (containerH * imgAspectRatio) to containerH else containerW to (containerW / imgAspectRatio)
+                                val left = (containerW - drawnW) / 2
+                                val top = (containerH - drawnH) / 2
+                                if (offset.x in left..(left + drawnW) && offset.y in top..(top + drawnH)) {
+                                    val normX = (offset.x - left) / drawnW
+                                    val normY = (offset.y - top) / drawnH
+                                    val hitBones = bones.filter { bone ->
+                                        val bmp = boneMasks[bone.id] ?: return@filter false
+                                        val px = (normX * bmp.width).toInt().coerceIn(0, bmp.width - 1)
+                                        val py = (normY * bmp.height).toInt().coerceIn(0, bmp.height - 1)
+                                        android.graphics.Color.alpha(bmp.getPixel(px, py)) > 0
+                                    }
+                                    if (hitBones.isNotEmpty()) {
+                                        val selected = if (hitBones.any { it.id == currentBone.id }) currentBone else hitBones.first()
+                                        viewModel.selectAnswer(selected)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
             contentAlignment = Alignment.Center
         ) {
-            val isAnswered = answerResult is AnswerResult.Answered
-            if (isAnswered) {
-                // If an answer has been given, show the "Next" button.
-                Button(onClick = viewModel::advance) {
-                    val isLastQuestion = session.remainingBones.size == 1
-                    val nextButtonText = if (isLastQuestion) "Finish" else "Next"
+            val highlightColor = when (val res = answerResult) {
+                is AnswerResult.Answered -> if (res.wasCorrect) CorrectAnswerColor else {
+                    if (quizMode == QuizMode.TAP) CorrectAnswerColor else FalseAnswerColor
+                }
+                is AnswerResult.Unanswered -> if (quizMode == QuizMode.TAP) Color.Transparent else QuestionHighlightColor
+            }
+            val errorBone = if (quizMode == QuizMode.TAP && result != null && !result.wasCorrect) result.selectedOption else null
 
-                    if (settingsState.enableAutoAdvance) {
-                        Text("$nextButtonText ($countdown)")
-                    } else {
-                        Text(nextButtonText)
+            BoneImage(
+                bone = currentBone,
+                highlightColor = highlightColor,
+                errorBone = errorBone,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        // --- INTERACTION AREA (Fixed size to prevent jumps) ---
+        Box(modifier = Modifier.fillMaxWidth().height(220.dp), contentAlignment = Alignment.TopCenter) {
+            when (quizMode) {
+                QuizMode.CHOOSE -> {
+                    Column {
+                        options.forEach { bone ->
+                            val isAnswered = answerResult is AnswerResult.Answered
+                            AnswerButton(
+                                text = bone.getName(language),
+                                isSelected = result?.selectedOption == bone,
+                                isCorrect = isAnswered && bone.id == currentBone.id,
+                                enabled = !isAnswered,
+                                onClick = { viewModel.selectAnswer(bone) }
+                            )
+                            Spacer(Modifier.height(8.dp))
+                        }
                     }
                 }
-            } else {
-                // If no answer has been given yet...
-                if (!isMultipleChoice) {
-                    // ...and it's a written answer quiz, show the "Submit" button.
-                    Button(
-                        onClick = { viewModel.submitWrittenAnswer(writtenAnswer, language) },
-                        enabled = writtenAnswer.isNotBlank()
-                    ) {
-                        Text("Submit")
+                QuizMode.WRITE -> {
+                    val isAnswered = answerResult is AnswerResult.Answered
+                    val wasCorrect = result?.wasCorrect == true
+                    Column {
+                        OutlinedTextField(
+                            value = writtenAnswer,
+                            onValueChange = { writtenAnswer = it },
+                            label = { Text("Enter bone name in ${language.name.lowercase()}") },
+                            singleLine = true,
+                            enabled = !isAnswered,
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = if (isAnswered) {
+                                val color = if (wasCorrect) CorrectAnswerColor else FalseAnswerColor
+                                OutlinedTextFieldDefaults.colors(disabledBorderColor = color, disabledTextColor = color, disabledLabelColor = color)
+                            } else { OutlinedTextFieldDefaults.colors() }
+                        )
+                        if (isAnswered) {
+                            Text(
+                                text = if (wasCorrect) "Correct!" else "Correct answer: ${currentBone.getName(language)}",
+                                color = if (wasCorrect) CorrectAnswerColor else FalseAnswerColor,
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                        }
                     }
-                } // In multiple choice mode, this box remains empty, as answer buttons are shown above.
+                }
+                QuizMode.TAP -> {
+                    if (result != null) {
+                        Text(
+                            text = if (result.wasCorrect) "Correct!" else "Incorrect! You tapped: ${result.selectedOption?.getName(language)}",
+                            color = if (result.wasCorrect) CorrectAnswerColor else FalseAnswerColor,
+                            style = MaterialTheme.typography.headlineSmall,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
+                }
+            }
+        }
+
+        // --- NAVIGATION BUTTON ---
+        Box(modifier = Modifier.height(48.dp), contentAlignment = Alignment.Center) {
+            if (answerResult is AnswerResult.Answered) {
+                Button(onClick = viewModel::advance) {
+                    val nextButtonText = if (session.remainingBones.size == 1) "Finish" else "Next"
+                    Text(if (settingsState.enableAutoAdvance) "$nextButtonText ($countdown)" else nextButtonText)
+                }
+            } else if (quizMode == QuizMode.WRITE) {
+                Button(onClick = { viewModel.submitWrittenAnswer(writtenAnswer, language) }, enabled = writtenAnswer.isNotBlank()) {
+                    Text("Submit")
+                }
             }
         }
     }

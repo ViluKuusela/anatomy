@@ -28,7 +28,7 @@ class SettingsRepository(private val context: Context) {
         // Quiz start settings
         val ANATOMY_AREA = stringPreferencesKey("anatomy_area")
         val LANGUAGE = stringPreferencesKey("language")
-        val IS_MULTIPLE_CHOICE = booleanPreferencesKey("is_multiple_choice")
+        val QUIZ_MODE = stringPreferencesKey("quiz_mode")
     }
 
     // Flow for general app settings.
@@ -44,7 +44,7 @@ class SettingsRepository(private val context: Context) {
         QuizStartUiState(
             anatomyArea = prefs[PreferencesKeys.ANATOMY_AREA] ?: "Hand",
             language = Language.valueOf(prefs[PreferencesKeys.LANGUAGE] ?: Language.LATIN.name),
-            isMultipleChoice = prefs[PreferencesKeys.IS_MULTIPLE_CHOICE] ?: true
+            quizMode = QuizMode.valueOf(prefs[PreferencesKeys.QUIZ_MODE] ?: QuizMode.CHOOSE.name)
         )
     }
 
@@ -76,9 +76,9 @@ class SettingsRepository(private val context: Context) {
         }
     }
 
-    suspend fun setIsMultipleChoice(isMultipleChoice: Boolean) {
+    suspend fun setQuizMode(mode: QuizMode) {
         context.dataStore.edit { prefs ->
-            prefs[PreferencesKeys.IS_MULTIPLE_CHOICE] = isMultipleChoice
+            prefs[PreferencesKeys.QUIZ_MODE] = mode.name
         }
     }
 }

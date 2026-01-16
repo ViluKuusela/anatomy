@@ -317,6 +317,16 @@ object BoneRepository {
             highlightMaskRes = R.drawable.skull_bones_sphenoidale
         ),
         Bone(
+            id = "parietale",
+            names = mapOf(
+                Language.LATIN to "Os parietale",
+                Language.ENGLISH to "Parietal bone",
+                Language.FINNISH to "Päälaenluu"
+            ),
+            baseDrawableRes = R.drawable.skull_bones_base,
+            highlightMaskRes = R.drawable.skull_bones_parietale
+        ),
+        Bone(
             id = "zygomaticum",
             names = mapOf(
                 Language.LATIN to "Os zygomaticum",

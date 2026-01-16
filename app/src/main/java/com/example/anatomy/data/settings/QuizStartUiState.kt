@@ -8,5 +8,5 @@ import com.example.anatomy.ui.language.Language
 data class QuizStartUiState(
     val anatomyArea: String,
     val language: Language,
-    val isMultipleChoice: Boolean
+    val quizMode: QuizMode = QuizMode.CHOOSE
 )

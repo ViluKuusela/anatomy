@@ -3,9 +3,7 @@ package com.example.anatomy.ui.quiz
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,6 +19,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.example.anatomy.R
+import com.example.anatomy.data.settings.QuizMode
 import com.example.anatomy.ui.language.Language
 import androidx.core.graphics.get
 import androidx.core.graphics.createBitmap
@@ -28,7 +27,7 @@ import androidx.core.graphics.createBitmap
 @Composable
 fun QuizStartScreen(
     viewModel: QuizStartViewModel,
-    onStartQuiz: (String, Language, Boolean) -> Unit
+    onStartQuiz: (String, Language, QuizMode) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -84,7 +83,7 @@ fun QuizStartScreen(
 
                             hitArea?.let { area ->
                                 viewModel.setAnatomyArea(area)
-                                onStartQuiz(area, uiState.language, uiState.isMultipleChoice)
+                                onStartQuiz(area, uiState.language, uiState.quizMode)
                             }
                         }
                     }
@@ -111,8 +110,8 @@ fun QuizStartScreen(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                // Language Selection: All grouped tightly to the left
+            Column(modifier = Modifier.padding(12.dp)) {
+                // Language Selection
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
@@ -120,7 +119,7 @@ fun QuizStartScreen(
                     Text(
                         text = "Language:",
                         style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.width(90.dp)
+                        modifier = Modifier.width(85.dp)
                     )
                     Box {
                         TextButton(onClick = { languageExpanded = true }) {
@@ -143,9 +142,9 @@ fun QuizStartScreen(
                     }
                 }
 
-                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
 
-                // Answer Type Selection: All grouped tightly to the left
+                // Quiz Mode Selection: All on one row, left-aligned, tight spacing
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
@@ -153,19 +152,31 @@ fun QuizStartScreen(
                     Text(
                         text = "Type:",
                         style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.width(90.dp)
+                        modifier = Modifier.width(85.dp)
                     )
-                    RadioButton(
-                        selected = uiState.isMultipleChoice,
-                        onClick = { viewModel.setIsMultipleChoice(true) }
-                    )
-                    Text("Multiple Choice", style = MaterialTheme.typography.bodyMedium)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    RadioButton(
-                        selected = !uiState.isMultipleChoice,
-                        onClick = { viewModel.setIsMultipleChoice(false) }
-                    )
-                    Text("Written", style = MaterialTheme.typography.bodyMedium)
+                    
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        QuizMode.values().forEach { mode ->
+                            RadioButton(
+                                selected = uiState.quizMode == mode,
+                                onClick = { viewModel.setQuizMode(mode) },
+                                modifier = Modifier.size(32.dp) // Even smaller to ensure it fits
+                            )
+                            val label = when(mode) {
+                                QuizMode.TAP -> "Tap"
+                                QuizMode.CHOOSE -> "Choose"
+                                QuizMode.WRITE -> "Write"
+                            }
+                            Text(
+                                text = label, 
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(end = 4.dp)
+                            )
+                        }
+                    }
                 }
             }
         }
