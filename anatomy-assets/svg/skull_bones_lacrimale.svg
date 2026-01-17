@@ -4,9 +4,9 @@
 <svg
    version="1.1"
    id="Layer_1"
-   width="536.764"
-   height="308.853"
-   viewBox="0 0 536.764 308.853"
+   width="468.82397"
+   height="259.53882"
+   viewBox="0 0 468.82399 259.53882"
    overflow="visible"
    enable-background="new 0 0 536.764 308.853"
    xml:space="preserve"
@@ -25,18 +25,19 @@
    inkscape:pageopacity="0.0"
    inkscape:pagecheckerboard="0"
    inkscape:deskcolor="#d1d1d1"
-   inkscape:zoom="3.7784966"
-   inkscape:cx="268.3607"
-   inkscape:cy="154.4265"
-   inkscape:window-width="2560"
-   inkscape:window-height="1369"
-   inkscape:window-x="1912"
-   inkscape:window-y="-8"
+   inkscape:zoom="1.8892483"
+   inkscape:cx="142.91398"
+   inkscape:cy="140.53208"
+   inkscape:window-width="1920"
+   inkscape:window-height="1009"
+   inkscape:window-x="-8"
+   inkscape:window-y="148"
    inkscape:window-maximized="1"
    inkscape:current-layer="g285" />
 
 <g
-   id="g285">
+   id="g285"
+   transform="translate(-41.875033,-17.411481)">
 	
 	
 	
@@ -47,7 +48,7 @@
    gradientUnits="userSpaceOnUse"
    x1="129.3521"
    y1="200.709"
-   x2="129.0272"
+   x2="129.02721"
    y2="171.1463">
 		<stop
    offset="0"
@@ -142,18 +143,18 @@
 	
 	
 	<path
-   fill="#FFFFFF"
+   fill="#ffffff"
    stroke="#000000"
    stroke-width="0.7797"
-   d="M116.695,143.943c-0.645,1.317-1.457,2.557-2.307,3.635   c0.738-0.935-1.495-5.366-1.653-6.457c-0.317-2.187,0.058-4.02,1.533-5.801c2.583-3.121,4.011,1.084,3.787,3.992   C117.935,140.879,117.421,142.461,116.695,143.943z"
+   d="m 116.695,143.943 c -0.645,1.317 -1.457,2.557 -2.307,3.635 0.738,-0.935 -1.495,-5.366 -1.653,-6.457 -0.317,-2.187 0.058,-4.02 1.533,-5.801 2.583,-3.121 4.011,1.084 3.787,3.992 -0.12,1.567 -0.634,3.149 -1.36,4.631 z"
    id="path89" />
 	
 	
 	<path
-   fill="#FFFFFF"
+   fill="#ffffff"
    stroke="#000000"
    stroke-width="0.7797"
-   d="M145.395,141.162c-0.016-0.84,0.008-1.727,0.056-2.693   c0.084-1.747-0.161-3.365-0.319-5.065c0.464,1.938-1.593,2.59-2.298,4.103c-1.92,4.126,2.899,8.249,4.616,11.397   C145.923,146.102,145.445,143.875,145.395,141.162z"
+   d="m 145.395,141.162 c -0.016,-0.84 0.008,-1.727 0.056,-2.693 0.084,-1.747 -0.161,-3.365 -0.319,-5.065 0.464,1.938 -1.593,2.59 -2.298,4.103 -1.92,4.126 2.899,8.249 4.616,11.397 -1.527,-2.802 -2.005,-5.029 -2.055,-7.742 z"
    id="path92" />
 	
 	
@@ -167,7 +168,7 @@
 	
 	<g
    id="g170"
-   transform="matrix(0.69562127,0,0,1.002607,92.043687,-0.36790405)">
+   transform="matrix(0.61969638,0,0,1.0033439,115.00208,-0.47189393)">
 		<path
    fill="#ffffff"
    stroke="#000000"
@@ -190,10 +191,10 @@
 	<linearGradient
    id="XMLID_21_"
    gradientUnits="userSpaceOnUse"
-   x1="96.6118"
+   x1="96.611801"
    y1="256.2207"
-   x2="96.0039"
-   y2="258.9571">
+   x2="96.003899"
+   y2="258.95709">
 		<stop
    offset="0"
    style="stop-color:#FFFFFF"
@@ -236,11 +237,11 @@
 		<linearGradient
    id="XMLID_22_"
    gradientUnits="userSpaceOnUse"
-   x1="135.9546"
-   y1="232.6323"
-   x2="135.1961"
+   x1="135.95461"
+   y1="232.63229"
+   x2="135.19611"
    y2="236.0464"
-   gradientTransform="matrix(0.9824 -0.1867 0.1867 0.9824 -11.894 52.1387)">
+   gradientTransform="matrix(0.9824,-0.1867,0.1867,0.9824,-11.894,52.1387)">
 		<stop
    offset="0"
    style="stop-color:#FFFFFF"

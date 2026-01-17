@@ -2,8 +2,11 @@ package com.example.anatomy.ui.quiz
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Settings
@@ -14,6 +17,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -90,7 +95,7 @@ fun QuizScreen(
 
     if (session.currentBone == null) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
+            modifier = Modifier.fillMaxSize().systemBarsPadding().padding(16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -125,7 +130,27 @@ fun QuizScreen(
     val answeredCount = session.totalCount - session.remainingBones.size
     val progress = answeredCount.toFloat() / session.totalCount
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .systemBarsPadding()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .pointerInput(Unit) {
+                var offsetX = 0f
+                detectHorizontalDragGestures(
+                    onDragStart = { offsetX = 0f },
+                    onHorizontalDrag = { _, dragAmount ->
+                        offsetX += dragAmount
+                    },
+                    onDragEnd = {
+                        if (offsetX < -200f) {
+                            showEndSessionDialog = true
+                        }
+                    }
+                )
+            },
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         // --- HEADER ---
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             IconButton(onClick = onOpenSettings) { Icon(Icons.Default.Settings, "Settings") }
@@ -139,16 +164,10 @@ fun QuizScreen(
             style = MaterialTheme.typography.bodyMedium
         )
 
-        Spacer(Modifier.height(16.dp))
-        
-        // --- QUESTION HEADER (Fixed height) ---
-        Box(modifier = Modifier.height(60.dp), contentAlignment = Alignment.Center) {
-            if (quizMode == QuizMode.TAP) {
-                Text("Tap ${currentBone.getName(language)}", style = MaterialTheme.typography.headlineSmall)
-            }
-        }
+        // Minimize top spacer to maximize image area
+        Spacer(Modifier.height(8.dp))
 
-        // --- IMAGE AREA (Pixel perfect hit testing) ---
+        // --- IMAGE AREA ---
         val firstBoneRef = bones.firstOrNull()
         val baseDrawableRef = remember(anatomyArea) {
             if (firstBoneRef != null) ContextCompat.getDrawable(context, firstBoneRef.baseDrawableRes) else null
@@ -208,10 +227,17 @@ fun QuizScreen(
             )
         }
 
-        Spacer(Modifier.height(16.dp))
+        // Reduced spacer between image and text
+        Spacer(Modifier.height(8.dp))
 
-        // --- INTERACTION AREA (Fixed size to prevent jumps) ---
-        Box(modifier = Modifier.fillMaxWidth().height(220.dp), contentAlignment = Alignment.TopCenter) {
+        // --- INTERACTION AREA ---
+        val interactionAreaHeight = when (quizMode) {
+            QuizMode.TAP -> 60.dp
+            QuizMode.WRITE -> 120.dp
+            QuizMode.CHOOSE -> 220.dp
+        }
+
+        Box(modifier = Modifier.fillMaxWidth().height(interactionAreaHeight), contentAlignment = Alignment.TopCenter) {
             when (quizMode) {
                 QuizMode.CHOOSE -> {
                     Column {
@@ -239,6 +265,14 @@ fun QuizScreen(
                             singleLine = true,
                             enabled = !isAnswered,
                             modifier = Modifier.fillMaxWidth(),
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    if (writtenAnswer.isNotBlank()) {
+                                        viewModel.submitWrittenAnswer(writtenAnswer, language)
+                                    }
+                                }
+                            ),
                             colors = if (isAnswered) {
                                 val color = if (wasCorrect) CorrectAnswerColor else FalseAnswerColor
                                 OutlinedTextFieldDefaults.colors(disabledBorderColor = color, disabledTextColor = color, disabledLabelColor = color)
@@ -255,28 +289,33 @@ fun QuizScreen(
                     }
                 }
                 QuizMode.TAP -> {
-                    if (result != null) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        // Bone name (always visible)
                         Text(
-                            text = if (result.wasCorrect) "Correct!" else "Incorrect! You tapped: ${result.selectedOption?.getName(language)}",
-                            color = if (result.wasCorrect) CorrectAnswerColor else FalseAnswerColor,
+                            text = currentBone.getName(language),
                             style = MaterialTheme.typography.headlineSmall,
-                            modifier = Modifier.padding(top = 8.dp)
+                            textAlign = TextAlign.Center
                         )
+                        // Result text (only visible after answering)
+                        if (answerResult is AnswerResult.Answered && result != null) {
+                            Text(
+                                text = if (result.wasCorrect) "Correct!" else "Incorrect! You tapped: ${result.selectedOption?.getName(language)}",
+                                color = if (result.wasCorrect) CorrectAnswerColor else FalseAnswerColor,
+                                style = MaterialTheme.typography.titleMedium,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
             }
         }
 
-        // --- NAVIGATION BUTTON ---
-        Box(modifier = Modifier.height(48.dp), contentAlignment = Alignment.Center) {
+        // --- NAVIGATION BUTTON AREA ---
+        Box(modifier = Modifier.fillMaxWidth().height(48.dp), contentAlignment = Alignment.Center) {
             if (answerResult is AnswerResult.Answered) {
                 Button(onClick = viewModel::advance) {
                     val nextButtonText = if (session.remainingBones.size == 1) "Finish" else "Next"
                     Text(if (settingsState.enableAutoAdvance) "$nextButtonText ($countdown)" else nextButtonText)
-                }
-            } else if (quizMode == QuizMode.WRITE) {
-                Button(onClick = { viewModel.submitWrittenAnswer(writtenAnswer, language) }, enabled = writtenAnswer.isNotBlank()) {
-                    Text("Submit")
                 }
             }
         }
