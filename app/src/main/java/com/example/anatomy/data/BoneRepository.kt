@@ -13,9 +13,9 @@ object BoneRepository {
         Bone(
             id = "ulna",
             names = mapOf(
-                Language.LATIN to "Ulna",
-                Language.ENGLISH to "Ulna",
-                Language.FINNISH to "Kyynärluu"
+                Language.LATIN to "Ulna | Os ulnae",
+                Language.ENGLISH to "Ulna | Ulnae",
+                Language.FINNISH to "Kyynärluu | Kyynärluut"
             ),
             baseDrawableRes = R.drawable.hand_bones_base,
             highlightMaskRes = R.drawable.hand_bones_ulna
@@ -23,9 +23,9 @@ object BoneRepository {
         Bone(
             id = "radius",
             names = mapOf(
-                Language.LATIN to "Radius",
-                Language.ENGLISH to "Radius",
-                Language.FINNISH to "Värttinäluu"
+                Language.LATIN to "Radius | Os radii",
+                Language.ENGLISH to "Radius | Radii",
+                Language.FINNISH to "Värttinäluu | Värttinäluut"
             ),
             baseDrawableRes = R.drawable.hand_bones_base,
             highlightMaskRes = R.drawable.hand_bones_radius
@@ -113,9 +113,9 @@ object BoneRepository {
         Bone(
             id = "metacarpalia",
             names = mapOf(
-                Language.LATIN to "Ossa metacarpi",
-                Language.ENGLISH to "Metacarpals",
-                Language.FINNISH to "Kämmenluut"
+                Language.LATIN to "Ossa metacarpi | Os metacarpi | Ossa metacarpalia",
+                Language.ENGLISH to "Metacarpals | Metacarpal",
+                Language.FINNISH to "Kämmenluut | Kämmenluu"
             ),
             baseDrawableRes = R.drawable.hand_bones_base,
             highlightMaskRes = R.drawable.hand_bones_metacarpalia
@@ -123,9 +123,9 @@ object BoneRepository {
         Bone(
             id = "phalages_proximalis",
             names = mapOf(
-                Language.LATIN to "Phalanges proximales",
-                Language.ENGLISH to "Proximal phalanges",
-                Language.FINNISH to "Tyviluut"
+                Language.LATIN to "Phalanges proximales | Phalanx proximalis",
+                Language.ENGLISH to "Proximal phalanges | Proximal phalanx",
+                Language.FINNISH to "Tyviluut | Tyviluu | Sormien tyviluut"
             ),
             baseDrawableRes = R.drawable.hand_bones_base,
             highlightMaskRes = R.drawable.hand_bones_phalages_proximalis
@@ -133,9 +133,9 @@ object BoneRepository {
         Bone(
             id = "phalages_mediae",
             names = mapOf(
-                Language.LATIN to "Phalanges mediae",
-                Language.ENGLISH to "Middle phalanges",
-                Language.FINNISH to "Keskiluut"
+                Language.LATIN to "Phalanges mediae | Phalanx media",
+                Language.ENGLISH to "Middle phalanges | Middle phalanx",
+                Language.FINNISH to "Keskiluut | Keskiluu | Sormien keskiluut"
             ),
             baseDrawableRes = R.drawable.hand_bones_base,
             highlightMaskRes = R.drawable.hand_bones_phalages_mediae
@@ -143,9 +143,9 @@ object BoneRepository {
         Bone(
             id = "phalages_distales",
             names = mapOf(
-                Language.LATIN to "Phalanges distales",
-                Language.ENGLISH to "Distal phalanges",
-                Language.FINNISH to "Kärkiluut"
+                Language.LATIN to "Phalanges distales | Phalanx distalis",
+                Language.ENGLISH to "Distal phalanges | Distal phalanx",
+                Language.FINNISH to "Kärkiluut | Kärkiluu | Sormien kärkiluut"
             ),
             baseDrawableRes = R.drawable.hand_bones_base,
             highlightMaskRes = R.drawable.hand_bones_phalages_distales
@@ -157,8 +157,8 @@ object BoneRepository {
             id = "talus",
             names = mapOf(
                 Language.LATIN to "Talus",
-                Language.ENGLISH to "Talus",
-                Language.FINNISH to "Telaluu"
+                Language.ENGLISH to "Talus | Tali",
+                Language.FINNISH to "Telaluu | Telaluut"
             ),
             baseDrawableRes = R.drawable.foot_bones_base,
             highlightMaskRes = R.drawable.foot_bones_talus
@@ -166,9 +166,9 @@ object BoneRepository {
         Bone(
             id = "calcaneus",
             names = mapOf(
-                Language.LATIN to "Calcaneus",
-                Language.ENGLISH to "Calcaneus",
-                Language.FINNISH to "Kantaluu"
+                Language.LATIN to "Calcaneus | Os calcis",
+                Language.ENGLISH to "Calcaneus | Calcanei",
+                Language.FINNISH to "Kantaluu | Kantaluut"
             ),
             baseDrawableRes = R.drawable.foot_bones_base,
             highlightMaskRes = R.drawable.foot_bones_calcaneus
@@ -226,9 +226,9 @@ object BoneRepository {
         Bone(
             id = "metatarsalia",
             names = mapOf(
-                Language.LATIN to "Ossa metatarsi",
-                Language.ENGLISH to "Metatarsals",
-                Language.FINNISH to "Jalkapöytäluut"
+                Language.LATIN to "Ossa metatarsi | Ossa metatarsalia | Os metatarsi",
+                Language.ENGLISH to "Metatarsals | Metatarsal",
+                Language.FINNISH to "Jalkapöytäluut | Jalkapöytäluu"
             ),
             baseDrawableRes = R.drawable.foot_bones_base,
             highlightMaskRes = R.drawable.foot_bones_metatarsalia
@@ -236,9 +236,9 @@ object BoneRepository {
         Bone(
             id = "phalages_proximalis",
             names = mapOf(
-                Language.LATIN to "Phalanges proximales",
-                Language.ENGLISH to "Proximal phalanges",
-                Language.FINNISH to "Tyviluut"
+                Language.LATIN to "Phalanges proximales | Phalanx proximalis",
+                Language.ENGLISH to "Proximal phalanges | Proximal phalanx",
+                Language.FINNISH to "Tyviluut | Tyviluu | Varpaiden tyviluut"
             ),
             baseDrawableRes = R.drawable.foot_bones_base,
             highlightMaskRes = R.drawable.foot_bones_phalages_proximalis
@@ -246,9 +246,9 @@ object BoneRepository {
         Bone(
             id = "phalages_mediae",
             names = mapOf(
-                Language.LATIN to "Phalanges mediae",
-                Language.ENGLISH to "Middle phalanges",
-                Language.FINNISH to "Keskiluut"
+                Language.LATIN to "Phalanges mediae | Phalanx media",
+                Language.ENGLISH to "Middle phalanges | Middle phalanx",
+                Language.FINNISH to "Keskiluut | Keskiluu | Varpaiden keskiluut"
             ),
             baseDrawableRes = R.drawable.foot_bones_base,
             highlightMaskRes = R.drawable.foot_bones_phalages_mediae
@@ -256,9 +256,9 @@ object BoneRepository {
         Bone(
             id = "phalages_distales",
             names = mapOf(
-                Language.LATIN to "Phalanges distales",
-                Language.ENGLISH to "Distal phalanges",
-                Language.FINNISH to "Kärkiluut"
+                Language.LATIN to "Phalanges distales | Phalanx distalis",
+                Language.ENGLISH to "Distal phalanges | Distal phalanx",
+                Language.FINNISH to "Kärkiluut | Kärkiluu | Varpaiden kärkiluut"
             ),
             baseDrawableRes = R.drawable.foot_bones_base,
             highlightMaskRes = R.drawable.foot_bones_phalages_distales
@@ -279,9 +279,9 @@ object BoneRepository {
         Bone(
             id = "nasale",
             names = mapOf(
-                Language.LATIN to "Os nasale",
-                Language.ENGLISH to "Nasal bone",
-                Language.FINNISH to "Nenäluu"
+                Language.LATIN to "Os nasale | Ossa nasalia",
+                Language.ENGLISH to "Nasal bone | Nasal bones",
+                Language.FINNISH to "Nenäluu | Nenäluut"
             ),
             baseDrawableRes = R.drawable.skull_bones_base,
             highlightMaskRes = R.drawable.skull_bones_nasale
@@ -289,9 +289,9 @@ object BoneRepository {
         Bone(
             id = "lacrimale",
             names = mapOf(
-                Language.LATIN to "Os lacrimale",
-                Language.ENGLISH to "Lacrimal bone",
-                Language.FINNISH to "Kyynelluu"
+                Language.LATIN to "Os lacrimale | Ossa lacrimalia",
+                Language.ENGLISH to "Lacrimal bone | Lacrimal bones",
+                Language.FINNISH to "Kyynelluu | Kyynelluut"
             ),
             baseDrawableRes = R.drawable.skull_bones_base,
             highlightMaskRes = R.drawable.skull_bones_lacrimale
@@ -319,9 +319,9 @@ object BoneRepository {
         Bone(
             id = "parietale",
             names = mapOf(
-                Language.LATIN to "Os parietale",
-                Language.ENGLISH to "Parietal bone",
-                Language.FINNISH to "Päälaenluu"
+                Language.LATIN to "Os parietale | Ossa parietalia",
+                Language.ENGLISH to "Parietal bone | Parietal bones",
+                Language.FINNISH to "Päälaenluu | Päälaenluut"
             ),
             baseDrawableRes = R.drawable.skull_bones_base,
             highlightMaskRes = R.drawable.skull_bones_parietale
@@ -329,9 +329,9 @@ object BoneRepository {
         Bone(
             id = "zygomaticum",
             names = mapOf(
-                Language.LATIN to "Os zygomaticum",
-                Language.ENGLISH to "Zygomatic bone",
-                Language.FINNISH to "Poskiluu"
+                Language.LATIN to "Os zygomaticum | Ossa zygomatica",
+                Language.ENGLISH to "Zygomatic bone | Zygomatic bones",
+                Language.FINNISH to "Poskiluu | Poskiluut"
             ),
             baseDrawableRes = R.drawable.skull_bones_base,
             highlightMaskRes = R.drawable.skull_bones_zygomaticum
@@ -339,9 +339,9 @@ object BoneRepository {
         Bone(
             id = "maxilla",
             names = mapOf(
-                Language.LATIN to "Maxilla",
-                Language.ENGLISH to "Maxilla",
-                Language.FINNISH to "Yläleukaluu"
+                Language.LATIN to "Maxilla | Os maxillae | Os maxillare",
+                Language.ENGLISH to "Maxilla | Upper jaw",
+                Language.FINNISH to "Yläleukaluu | Yläleuka"
             ),
             baseDrawableRes = R.drawable.skull_bones_base,
             highlightMaskRes = R.drawable.skull_bones_maxilla
@@ -349,9 +349,9 @@ object BoneRepository {
         Bone(
             id = "mandibula",
             names = mapOf(
-                Language.LATIN to "Mandibula",
-                Language.ENGLISH to "Mandible",
-                Language.FINNISH to "Alaleukaluu"
+                Language.LATIN to "Mandibula | Os mandibulae | Os mandibulare",
+                Language.ENGLISH to "Mandible | Jawbone",
+                Language.FINNISH to "Alaleukaluu | Alaleuka"
             ),
             baseDrawableRes = R.drawable.skull_bones_base,
             highlightMaskRes = R.drawable.skull_bones_mandibula
@@ -359,9 +359,9 @@ object BoneRepository {
         Bone(
             id = "temporale",
             names = mapOf(
-                Language.LATIN to "Os temporale",
-                Language.ENGLISH to "Temporal bone",
-                Language.FINNISH to "Ohimoluu"
+                Language.LATIN to "Os temporale | Ossa temporalia",
+                Language.ENGLISH to "Temporal bone | Temporal bones",
+                Language.FINNISH to "Ohimoluu | Ohimoluut"
             ),
             baseDrawableRes = R.drawable.skull_bones_base,
             highlightMaskRes = R.drawable.skull_bones_temporale
@@ -382,9 +382,9 @@ object BoneRepository {
         Bone(
             id = "clavicula",
             names = mapOf(
-                Language.LATIN to "Clavicula",
-                Language.ENGLISH to "Clavicle",
-                Language.FINNISH to "Solisluu"
+                Language.LATIN to "Clavicula | Os claviculae",
+                Language.ENGLISH to "Clavicle | Collarbone | Clavicles",
+                Language.FINNISH to "Solisluu | Solisluut"
             ),
             baseDrawableRes = R.drawable.upper_bones_base,
             highlightMaskRes = R.drawable.upper_bones_clavicula
@@ -392,9 +392,9 @@ object BoneRepository {
         Bone(
             id = "scapula",
             names = mapOf(
-                Language.LATIN to "Scapula",
-                Language.ENGLISH to "Scapula",
-                Language.FINNISH to "Lapaluu"
+                Language.LATIN to "Scapula | Os scapulae",
+                Language.ENGLISH to "Scapula | Shoulder blade | Scapulae",
+                Language.FINNISH to "Lapaluu | Lapaluut"
             ),
             baseDrawableRes = R.drawable.upper_bones_base,
             highlightMaskRes = R.drawable.upper_bones_scapula
@@ -403,18 +403,48 @@ object BoneRepository {
             id = "sternum",
             names = mapOf(
                 Language.LATIN to "Sternum",
-                Language.ENGLISH to "Sternum",
+                Language.ENGLISH to "Sternum | Breastbone",
                 Language.FINNISH to "Rintalasta"
             ),
             baseDrawableRes = R.drawable.upper_bones_base,
             highlightMaskRes = R.drawable.upper_bones_sternum
         ),
         Bone(
+            id = "manubrium",
+            names = mapOf(
+                Language.LATIN to "Manubrium sterni",
+                Language.ENGLISH to "Manubrium",
+                Language.FINNISH to "Rintalastan kahva"
+            ),
+            baseDrawableRes = R.drawable.upper_bones_base,
+            highlightMaskRes = R.drawable.upper_bones_manubrium
+        ),
+        Bone(
+            id = "gladiolus",
+            names = mapOf(
+                Language.LATIN to "Corpus sterni",
+                Language.ENGLISH to "Body of sternum",
+                Language.FINNISH to "Rintalastan runko"
+            ),
+            baseDrawableRes = R.drawable.upper_bones_base,
+            highlightMaskRes = R.drawable.upper_bones_gladiolus
+        ),
+        Bone(
+            id = "processus_xiphoideus",
+            names = mapOf(
+                Language.LATIN to "Processus xiphoideus",
+                Language.ENGLISH to "Xiphoid process",
+                Language.FINNISH to "Miekkalisäke"
+            ),
+            baseDrawableRes = R.drawable.upper_bones_base,
+            highlightMaskRes = R.drawable.upper_bones_processus_xiphoideus
+        ),
+        Bone(
             id = "humerus",
             names = mapOf(
-                Language.LATIN to "Humerus",
-                Language.ENGLISH to "Humerus",
-                Language.FINNISH to "Olkaluu"
+                Language.LATIN to "Humerus | Os humeri",
+                Language.ENGLISH to "Humerus | Arm bone | Humeri",
+                Language.FINNISH to "Olkaluu | Olkaluut"
             ),
             baseDrawableRes = R.drawable.upper_bones_base,
             highlightMaskRes = R.drawable.upper_bones_humerus
@@ -422,9 +452,9 @@ object BoneRepository {
         Bone(
             id = "radius",
             names = mapOf(
-                Language.LATIN to "Radius",
-                Language.ENGLISH to "Radius",
-                Language.FINNISH to "Värttinäluu"
+                Language.LATIN to "Radius | Os radii",
+                Language.ENGLISH to "Radius | Radii",
+                Language.FINNISH to "Värttinäluu | Värttinäluut"
             ),
             baseDrawableRes = R.drawable.upper_bones_base,
             highlightMaskRes = R.drawable.upper_bones_radius
@@ -432,9 +462,9 @@ object BoneRepository {
         Bone(
             id = "ulna",
             names = mapOf(
-                Language.LATIN to "Ulna",
-                Language.ENGLISH to "Ulna",
-                Language.FINNISH to "Kyynärluu"
+                Language.LATIN to "Ulna | Os ulnae",
+                Language.ENGLISH to "Ulna | Ulnae",
+                Language.FINNISH to "Kyynärluu | Kyynärluut"
             ),
             baseDrawableRes = R.drawable.upper_bones_base,
             highlightMaskRes = R.drawable.upper_bones_ulna
@@ -442,9 +472,9 @@ object BoneRepository {
         Bone(
             id = "costae",
             names = mapOf(
-                Language.LATIN to "Costae",
-                Language.ENGLISH to "Ribs",
-                Language.FINNISH to "Kylkiluut"
+                Language.LATIN to "Costae | Costa",
+                Language.ENGLISH to "Ribs | Rib",
+                Language.FINNISH to "Kylkiluut | Kylkiluu"
             ),
             baseDrawableRes = R.drawable.upper_bones_base,
             highlightMaskRes = R.drawable.upper_bones_costae
@@ -452,9 +482,9 @@ object BoneRepository {
         Bone(
             id = "vertebrae_cervicales",
             names = mapOf(
-                Language.LATIN to "Vertebrae cervicales",
-                Language.ENGLISH to "Cervical vertebrae",
-                Language.FINNISH to "Kaulanikamat"
+                Language.LATIN to "Vertebrae cervicales | Vertebra cervicalis",
+                Language.ENGLISH to "Cervical vertebrae | Cervical vertebra",
+                Language.FINNISH to "Kaulanikamat | Kaulanikama"
             ),
             baseDrawableRes = R.drawable.upper_bones_base,
             highlightMaskRes = R.drawable.upper_bones_vertebrae_cervicales
@@ -462,9 +492,9 @@ object BoneRepository {
         Bone(
             id = "vertebrae_thoracicae",
             names = mapOf(
-                Language.LATIN to "Vertebrae thoracicae",
-                Language.ENGLISH to "Thoracic vertebrae",
-                Language.FINNISH to "Rintanikamat"
+                Language.LATIN to "Vertebrae thoracicae | Vertebra thoracica",
+                Language.ENGLISH to "Thoracic vertebrae | Thoracic vertebra",
+                Language.FINNISH to "Rintanikamat | Rintanikama"
             ),
             baseDrawableRes = R.drawable.upper_bones_base,
             highlightMaskRes = R.drawable.upper_bones_vertebrae_thoracicae
@@ -472,9 +502,9 @@ object BoneRepository {
         Bone(
             id = "vertebrae_lumbales",
             names = mapOf(
-                Language.LATIN to "Vertebrae lumbales",
-                Language.ENGLISH to "Lumbar vertebrae",
-                Language.FINNISH to "Lannenikamat"
+                Language.LATIN to "Vertebrae lumbales | Vertebra lumbalis",
+                Language.ENGLISH to "Lumbar vertebrae | Lumbar vertebra",
+                Language.FINNISH to "Lannenikamat | Lannenikama"
             ),
             baseDrawableRes = R.drawable.upper_bones_base,
             highlightMaskRes = R.drawable.upper_bones_vertebrae_lumbales
@@ -506,18 +536,48 @@ object BoneRepository {
             id = "coxae",
             names = mapOf(
                 Language.LATIN to "Os coxae",
-                Language.ENGLISH to "Hip bone",
-                Language.FINNISH to "Lonkkaluu"
+                Language.ENGLISH to "Hip bone | Hip bones",
+                Language.FINNISH to "Lonkkaluu | Lonkkaluut"
             ),
             baseDrawableRes = R.drawable.lower_bones_base,
             highlightMaskRes = R.drawable.lower_bones_coxae
         ),
         Bone(
+            id = "ilium",
+            names = mapOf(
+                Language.LATIN to "Os ilium | Ossa ilia",
+                Language.ENGLISH to "Ilium | Ilia",
+                Language.FINNISH to "Suoliluu | Suoliluut"
+            ),
+            baseDrawableRes = R.drawable.lower_bones_base,
+            highlightMaskRes = R.drawable.lower_bones_ilium
+        ),
+        Bone(
+            id = "ischium",
+            names = mapOf(
+                Language.LATIN to "Os ischii | Ossa ischia",
+                Language.ENGLISH to "Ischium | Ischia",
+                Language.FINNISH to "Istuinaluu | Istuinaluut"
+            ),
+            baseDrawableRes = R.drawable.lower_bones_base,
+            highlightMaskRes = R.drawable.lower_bones_ischii
+        ),
+        Bone(
+            id = "pubis",
+            names = mapOf(
+                Language.LATIN to "Os pubis | Ossa pubes",
+                Language.ENGLISH to "Pubis | Pubes",
+                Language.FINNISH to "Häpyluu | Häpyluut"
+            ),
+            baseDrawableRes = R.drawable.lower_bones_base,
+            highlightMaskRes = R.drawable.lower_bones_pubis
+        ),
+        Bone(
             id = "femur",
             names = mapOf(
-                Language.LATIN to "Femur",
-                Language.ENGLISH to "Femur",
-                Language.FINNISH to "Reisiluu"
+                Language.LATIN to "Femur | Os femoris",
+                Language.ENGLISH to "Femur | Femurs",
+                Language.FINNISH to "Reisiluu | Reisiluut"
             ),
             baseDrawableRes = R.drawable.lower_bones_base,
             highlightMaskRes = R.drawable.lower_bones_femur
@@ -525,9 +585,9 @@ object BoneRepository {
         Bone(
             id = "patella",
             names = mapOf(
-                Language.LATIN to "Patella",
-                Language.ENGLISH to "Patella",
-                Language.FINNISH to "Polvilumpio"
+                Language.LATIN to "Patella | Os patellae",
+                Language.ENGLISH to "Patella | Kneecap | Patellae",
+                Language.FINNISH to "Polvilumpio | Lumpio | Polvilumpiot"
             ),
             baseDrawableRes = R.drawable.lower_bones_base,
             highlightMaskRes = R.drawable.lower_bones_patella
@@ -535,9 +595,9 @@ object BoneRepository {
         Bone(
             id = "tibia",
             names = mapOf(
-                Language.LATIN to "Tibia",
-                Language.ENGLISH to "Tibia",
-                Language.FINNISH to "Sääriluu"
+                Language.LATIN to "Tibia | Os tibiae",
+                Language.ENGLISH to "Tibia | Shinbone | Tibiae",
+                Language.FINNISH to "Sääriluu | Sääriluut"
             ),
             baseDrawableRes = R.drawable.lower_bones_base,
             highlightMaskRes = R.drawable.lower_bones_tibia
@@ -545,9 +605,9 @@ object BoneRepository {
         Bone(
             id = "fibula",
             names = mapOf(
-                Language.LATIN to "Fibula",
-                Language.ENGLISH to "Fibula",
-                Language.FINNISH to "Pohjeluu"
+                Language.LATIN to "Fibula | Os fibulae",
+                Language.ENGLISH to "Fibula | Calf bone | Fibulae",
+                Language.FINNISH to "Pohjeluu | Pohjeluut"
             ),
             baseDrawableRes = R.drawable.lower_bones_base,
             highlightMaskRes = R.drawable.lower_bones_fibula

@@ -4,9 +4,9 @@
 <svg
    version="1.1"
    id="Layer_1"
-   width="468.82397"
-   height="259.53882"
-   viewBox="0 0 468.82399 259.53882"
+   width="243.85306"
+   height="516.15979"
+   viewBox="0 0 243.85307 516.1598"
    overflow="visible"
    enable-background="new 0 0 536.764 308.853"
    xml:space="preserve"
@@ -25,19 +25,19 @@
    inkscape:pageopacity="0.0"
    inkscape:pagecheckerboard="0"
    inkscape:deskcolor="#d1d1d1"
-   inkscape:zoom="1.8892483"
-   inkscape:cx="10.586221"
-   inkscape:cy="157.99935"
-   inkscape:window-width="1920"
-   inkscape:window-height="1009"
-   inkscape:window-x="-8"
-   inkscape:window-y="148"
+   inkscape:zoom="1.3359003"
+   inkscape:cx="104.79824"
+   inkscape:cy="226.43905"
+   inkscape:window-width="2560"
+   inkscape:window-height="1369"
+   inkscape:window-x="1912"
+   inkscape:window-y="-8"
    inkscape:window-maximized="1"
    inkscape:current-layer="g285" />
 
 <g
    id="g285"
-   transform="translate(-41.875033,-17.411481)">
+   transform="translate(-49.76388,-17.411481)">
 	
 	
 	
@@ -49,7 +49,8 @@
    x1="129.3521"
    y1="200.709"
    x2="129.02721"
-   y2="171.1463">
+   y2="171.1463"
+   gradientTransform="translate(42.667855)">
 		<stop
    offset="0"
    style="stop-color:#FFFFFF"
@@ -101,7 +102,8 @@
    x1="166.7222"
    y1="106.3491"
    x2="167.5948"
-   y2="109.1841">
+   y2="109.1841"
+   gradientTransform="translate(42.667855)">
 		<stop
    offset="0"
    style="stop-color:#F4D58D"
@@ -147,7 +149,8 @@
 	
 	
 	<g
-   id="g97">
+   id="g97"
+   transform="translate(42.667855)">
 		<path
    fill="#ffffff"
    stroke="#000000"
@@ -172,7 +175,8 @@
    id="path97" />
 	</g>
 	<g
-   id="g103">
+   id="g103"
+   transform="translate(42.667855)">
 		<g
    id="g102">
 			<path
@@ -220,7 +224,8 @@
 	
 	
 	<g
-   id="g231">
+   id="g231"
+   transform="translate(-217.08207,264.24128)">
 		<path
    fill="#ffffff"
    stroke="#000000"
@@ -261,7 +266,8 @@
    x1="96.611801"
    y1="256.2207"
    x2="96.003899"
-   y2="258.95709">
+   y2="258.95709"
+   gradientTransform="translate(42.667855)">
 		<stop
    offset="0"
    style="stop-color:#FFFFFF"
@@ -308,7 +314,7 @@
    y1="232.63229"
    x2="135.19611"
    y2="236.0464"
-   gradientTransform="matrix(0.9824,-0.1867,0.1867,0.9824,-11.894,52.1387)">
+   gradientTransform="matrix(0.9824,-0.1867,0.1867,0.9824,30.773855,52.1387)">
 		<stop
    offset="0"
    style="stop-color:#FFFFFF"

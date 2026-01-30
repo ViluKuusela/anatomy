@@ -35,11 +35,17 @@ fun AppNavHost() {
             val quizStartViewModel: QuizStartViewModel = viewModel {
                 QuizStartViewModel(settingsRepository)
             }
-            QuizStartScreen(quizStartViewModel) { anatomyArea, language, quizMode ->
-                navController.navigate(
-                    Screen.Quiz.createRoute(anatomyArea, language.name, quizMode.name)
-                )
-            }
+            QuizStartScreen(
+                viewModel = quizStartViewModel,
+                onOpenSettings = {
+                    navController.navigate(Screen.Settings.route)
+                },
+                onStartQuiz = { anatomyArea, language, quizMode ->
+                    navController.navigate(
+                        Screen.Quiz.createRoute(anatomyArea, language.name, quizMode.name)
+                    )
+                }
+            )
         }
 
         composable(

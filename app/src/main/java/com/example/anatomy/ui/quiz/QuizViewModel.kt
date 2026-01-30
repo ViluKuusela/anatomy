@@ -59,14 +59,17 @@ class QuizViewModel(
 
     /**
      * Processes a user's written answer.
+     * Supports multiple acceptable names (e.g., singular/plural) separated by '|'.
      */
     fun submitWrittenAnswer(answer: String, language: Language) {
         if (_answerResult.value is AnswerResult.Answered) return
 
         val currentBone = _session.value.currentBone ?: return
-        val correctAnswer = currentBone.getName(language)
+        val acceptedNames = currentBone.getAllNames(language)
+        val trimmedAnswer = answer.trim()
 
-        val isCorrect = answer.equals(correctAnswer, ignoreCase = true)
+        // Check if the answer matches any of the accepted names (case-insensitive)
+        val isCorrect = acceptedNames.any { it.equals(trimmedAnswer, ignoreCase = true) }
 
         if (isCorrect) {
             _session.update { it.copy(correctCount = it.correctCount + 1) }

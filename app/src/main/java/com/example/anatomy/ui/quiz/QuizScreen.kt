@@ -2,9 +2,12 @@ package com.example.anatomy.ui.quiz
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -13,14 +16,21 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -59,7 +69,31 @@ fun QuizScreen(
 
     var countdown by remember { mutableStateOf(0) }
     var showEndSessionDialog by remember { mutableStateOf(false) }
+    var isExiting by remember { mutableStateOf(false) }
     var boxSize by remember { mutableStateOf(IntSize.Zero) }
+
+    // Zoom and pan states
+    var scale by remember { mutableStateOf(1f) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
+
+    // Session progress info
+    val answeredCount = session.totalCount - session.remainingBones.size
+    val progress = if (session.totalCount > 0) answeredCount.toFloat() / session.totalCount else 0f
+
+    // Helper to handle exit request (with or without confirmation)
+    val handleExit = {
+        if (!isExiting) {
+            if (answeredCount > 0) {
+                showEndSessionDialog = true
+            } else {
+                isExiting = true
+                onFinish()
+            }
+        }
+    }
+
+    // Handle Android system back button/gesture
+    BackHandler(onBack = handleExit)
 
     // Pre-calculate bitmaps for TAP mode hit testing
     val boneMasks = remember(bones) {
@@ -77,8 +111,20 @@ fun QuizScreen(
         AlertDialog(
             onDismissRequest = { showEndSessionDialog = false },
             title = { Text("End Session") },
-            confirmButton = { TextButton(onClick = { onFinish() }) { Text("Confirm") } },
-            dismissButton = { TextButton(onClick = { showEndSessionDialog = false }) { Text("Cancel") } }
+            text = { Text("Are you sure you want to quit? Your progress in this session will be lost.") },
+            confirmButton = { 
+                TextButton(onClick = { 
+                    if (!isExiting) {
+                        isExiting = true
+                        onFinish()
+                    }
+                }) { Text("Confirm") } 
+            },
+            dismissButton = { 
+                TextButton(onClick = { 
+                    showEndSessionDialog = false 
+                }) { Text("Cancel") } 
+            }
         )
     }
 
@@ -112,7 +158,12 @@ fun QuizScreen(
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
-            OutlinedButton(onClick = onFinish, modifier = Modifier.fillMaxWidth(0.7f)) {
+            OutlinedButton(onClick = {
+                if (!isExiting) {
+                    isExiting = true
+                    onFinish()
+                }
+            }, modifier = Modifier.fillMaxWidth(0.7f)) {
                 Text("Finish Session")
             }
         }
@@ -125,47 +176,64 @@ fun QuizScreen(
         (bones - currentBone).shuffled().take(3).plus(currentBone).shuffled()
     }
     var writtenAnswer by remember { mutableStateOf("") }
-    LaunchedEffect(currentBone) { writtenAnswer = "" }
-
-    val answeredCount = session.totalCount - session.remainingBones.size
-    val progress = answeredCount.toFloat() / session.totalCount
+    
+    LaunchedEffect(currentBone) { 
+        writtenAnswer = "" 
+        scale = 1f
+        offset = Offset.Zero
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .systemBarsPadding()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .pointerInput(Unit) {
-                var offsetX = 0f
-                detectHorizontalDragGestures(
-                    onDragStart = { offsetX = 0f },
-                    onHorizontalDrag = { _, dragAmount ->
-                        offsetX += dragAmount
-                    },
-                    onDragEnd = {
-                        if (offsetX < -200f) {
-                            showEndSessionDialog = true
-                        }
-                    }
-                )
-            },
+            .padding(horizontal = 16.dp, vertical = 0.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // --- HEADER ---
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            IconButton(onClick = onOpenSettings) { Icon(Icons.Default.Settings, "Settings") }
-            IconButton(onClick = { showEndSessionDialog = true }) { Icon(Icons.Default.Close, "End") }
-        }
-        LinearProgressIndicator(modifier = Modifier.fillMaxWidth().height(8.dp), progress = { progress }, color = MaterialTheme.colorScheme.primary, trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
-        
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = "$answeredCount / ${session.totalCount}",
-            style = MaterialTheme.typography.bodyMedium
-        )
+        // --- COMPACT HEADER ---
+        Row(
+            modifier = Modifier.fillMaxWidth().height(48.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            IconButton(onClick = onOpenSettings) { 
+                Icon(Icons.Default.Settings, "Settings", modifier = Modifier.size(20.dp)) 
+            }
+            
+            // Custom thick progress bar with text inside
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 8.dp)
+                    .height(22.dp)
+                    .clip(RoundedCornerShape(11.dp))
+                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .fillMaxWidth(progress)
+                        .background(MaterialTheme.colorScheme.primary)
+                )
+                Text(
+                    text = "$answeredCount / ${session.totalCount}",
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 11.sp,
+                        color = if (progress > 0.5f) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+                    )
+                )
+            }
 
-        // Minimize top spacer to maximize image area
-        Spacer(Modifier.height(8.dp))
+            IconButton(onClick = { handleExit() }) { 
+                Icon(Icons.Default.Close, "End", modifier = Modifier.size(20.dp)) 
+            }
+        }
+
+        Spacer(Modifier.height(4.dp))
 
         // --- IMAGE AREA ---
         val firstBoneRef = bones.firstOrNull()
@@ -180,26 +248,61 @@ fun QuizScreen(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
+                .clipToBounds() // This ensures zoomed content doesn't bleed over other UI elements
                 .onGloballyPositioned { boxSize = it.size }
-                .pointerInput(currentBone, answerResult) {
+                .pointerInput(Unit) {
+                    detectTransformGestures { _, pan, zoom, _ ->
+                        scale = (scale * zoom).coerceIn(1f, 5f)
+                        if (scale > 1f) {
+                            offset += pan
+                        } else {
+                            offset = Offset.Zero
+                        }
+                    }
+                }
+                .pointerInput(currentBone, answerResult, scale, offset) {
                     if (quizMode == QuizMode.TAP && answerResult is AnswerResult.Unanswered) {
-                        detectTapGestures { offset ->
+                        detectTapGestures { tapOffset ->
                             if (boxSize.width > 0 && boxSize.height > 0) {
                                 val containerW = size.width.toFloat()
                                 val containerH = size.height.toFloat()
+                                
+                                // Map tap back to original coordinate system for hit testing
+                                val cx = containerW / 2f
+                                val cy = containerH / 2f
+                                val origX = cx + (tapOffset.x - cx - offset.x) / scale
+                                val origY = cy + (tapOffset.y - cy - offset.y) / scale
+                                
                                 val containerRatio = containerW / containerH
                                 val (drawnW, drawnH) = if (containerRatio > imgAspectRatio) (containerH * imgAspectRatio) to containerH else containerW to (containerW / imgAspectRatio)
                                 val left = (containerW - drawnW) / 2
                                 val top = (containerH - drawnH) / 2
-                                if (offset.x in left..(left + drawnW) && offset.y in top..(top + drawnH)) {
-                                    val normX = (offset.x - left) / drawnW
-                                    val normY = (offset.y - top) / drawnH
+                                
+                                if (origX in left..(left + drawnW) && origY in top..(top + drawnH)) {
+                                    val normX = (origX - left) / drawnW
+                                    val normY = (origY - top) / drawnH
+                                    
+                                    val radius = 4
                                     val hitBones = bones.filter { bone ->
                                         val bmp = boneMasks[bone.id] ?: return@filter false
-                                        val px = (normX * bmp.width).toInt().coerceIn(0, bmp.width - 1)
-                                        val py = (normY * bmp.height).toInt().coerceIn(0, bmp.height - 1)
-                                        android.graphics.Color.alpha(bmp.getPixel(px, py)) > 0
+                                        val centerX = (normX * bmp.width).toInt()
+                                        val centerY = (normY * bmp.height).toInt()
+                                        
+                                        var found = false
+                                        for (dx in -radius..radius) {
+                                            for (dy in -radius..radius) {
+                                                val px = (centerX + dx).coerceIn(0, bmp.width - 1)
+                                                val py = (centerY + dy).coerceIn(0, bmp.height - 1)
+                                                if (android.graphics.Color.alpha(bmp.getPixel(px, py)) > 0) {
+                                                    found = true
+                                                    break
+                                                }
+                                            }
+                                            if (found) break
+                                        }
+                                        found
                                     }
+                                    
                                     if (hitBones.isNotEmpty()) {
                                         val selected = if (hitBones.any { it.id == currentBone.id }) currentBone else hitBones.first()
                                         viewModel.selectAnswer(selected)
@@ -223,11 +326,17 @@ fun QuizScreen(
                 bone = currentBone,
                 highlightColor = highlightColor,
                 errorBone = errorBone,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer(
+                        scaleX = scale,
+                        scaleY = scale,
+                        translationX = offset.x,
+                        translationY = offset.y
+                    )
             )
         }
 
-        // Reduced spacer between image and text
         Spacer(Modifier.height(8.dp))
 
         // --- INTERACTION AREA ---
@@ -265,7 +374,11 @@ fun QuizScreen(
                             singleLine = true,
                             enabled = !isAnswered,
                             modifier = Modifier.fillMaxWidth(),
-                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.Done,
+                                autoCorrectEnabled = false,
+                                keyboardType = KeyboardType.Password // Best way to force no suggestions/autocorrect on Android
+                            ),
                             keyboardActions = KeyboardActions(
                                 onDone = {
                                     if (writtenAnswer.isNotBlank()) {
