@@ -3,6 +3,9 @@ package com.example.anatomy.ui.quiz
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
@@ -21,9 +24,11 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -61,6 +66,7 @@ fun QuizScreen(
     val bones = BoneRepository.getBones(anatomyArea)
     val viewModel: QuizViewModel = viewModel { QuizViewModel(bones) }
     val context = LocalContext.current
+    val haptic = LocalHapticFeedback.current
 
     val session by viewModel.session.collectAsState()
     val answerResult by viewModel.answerResult.collectAsState()
@@ -79,6 +85,13 @@ fun QuizScreen(
     // Session progress info
     val answeredCount = session.totalCount - session.remainingBones.size
     val progress = if (session.totalCount > 0) answeredCount.toFloat() / session.totalCount else 0f
+    
+    // Animated progress for smoother UI
+    val animatedProgress by animateFloatAsState(
+        targetValue = progress,
+        animationSpec = tween(durationMillis = 500),
+        label = "progressAnimation"
+    )
 
     // Helper to handle exit request (with or without confirmation)
     val handleExit = {
@@ -129,13 +142,20 @@ fun QuizScreen(
     }
 
     LaunchedEffect(answerResult) {
-        if (settingsState.enableAutoAdvance && answerResult is AnswerResult.Answered) {
-            countdown = settingsState.autoNextDelaySeconds
-            while (countdown > 0) {
-                delay(1000)
-                countdown--
+        if (answerResult is AnswerResult.Answered) {
+            val res = answerResult as AnswerResult.Answered
+            if (!res.wasCorrect) {
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
             }
-            viewModel.advance()
+            
+            if (settingsState.enableAutoAdvance) {
+                countdown = settingsState.autoNextDelaySeconds
+                while (countdown > 0) {
+                    delay(1000)
+                    countdown--
+                }
+                viewModel.advance()
+            }
         }
     }
 
@@ -213,7 +233,7 @@ fun QuizScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .fillMaxWidth(progress)
+                        .fillMaxWidth(animatedProgress)
                         .background(MaterialTheme.colorScheme.primary)
                 )
                 Text(
@@ -223,7 +243,7 @@ fun QuizScreen(
                     style = MaterialTheme.typography.labelSmall.copy(
                         fontWeight = FontWeight.Bold,
                         fontSize = 11.sp,
-                        color = if (progress > 0.5f) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+                        color = if (animatedProgress > 0.5f) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                     )
                 )
             }
@@ -314,17 +334,25 @@ fun QuizScreen(
                 },
             contentAlignment = Alignment.Center
         ) {
-            val highlightColor = when (val res = answerResult) {
+            val targetHighlightColor = when (val res = answerResult) {
                 is AnswerResult.Answered -> if (res.wasCorrect) CorrectAnswerColor else {
                     if (quizMode == QuizMode.TAP) CorrectAnswerColor else FalseAnswerColor
                 }
                 is AnswerResult.Unanswered -> if (quizMode == QuizMode.TAP) Color.Transparent else QuestionHighlightColor
             }
+            
+            // Animate highlight color changes
+            val animatedHighlightColor by animateColorAsState(
+                targetValue = targetHighlightColor,
+                animationSpec = tween(durationMillis = 300),
+                label = "highlightColorAnimation"
+            )
+            
             val errorBone = if (quizMode == QuizMode.TAP && result != null && !result.wasCorrect) result.selectedOption else null
 
             BoneImage(
                 bone = currentBone,
-                highlightColor = highlightColor,
+                highlightColor = animatedHighlightColor,
                 errorBone = errorBone,
                 modifier = Modifier
                     .fillMaxSize()
@@ -377,7 +405,7 @@ fun QuizScreen(
                             keyboardOptions = KeyboardOptions(
                                 imeAction = ImeAction.Done,
                                 autoCorrectEnabled = false,
-                                keyboardType = KeyboardType.Password // Best way to force no suggestions/autocorrect on Android
+                                keyboardType = KeyboardType.Password
                             ),
                             keyboardActions = KeyboardActions(
                                 onDone = {
