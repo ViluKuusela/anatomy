@@ -10,9 +10,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.anatomy.R
+import com.example.anatomy.ui.language.Language
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -22,11 +25,12 @@ fun SettingsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showCredits by remember { mutableStateOf(false) }
+    var languageExpanded by remember { mutableStateOf(false) }
 
     if (showCredits) {
         AlertDialog(
             onDismissRequest = { showCredits = false },
-            title = { Text("Image Credits") },
+            title = { Text(stringResource(R.string.settings_credits_title)) },
             text = {
                 Column(
                     modifier = Modifier
@@ -65,7 +69,7 @@ fun SettingsScreen(
                 }
             },
             confirmButton = {
-                TextButton(onClick = { showCredits = false }) { Text("Close") }
+                TextButton(onClick = { showCredits = false }) { Text(stringResource(R.string.settings_close)) }
             }
         )
     }
@@ -73,10 +77,10 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Settings") },
+                title = { Text(stringResource(R.string.settings_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.cd_back))
                     }
                 }
             )
@@ -88,13 +92,48 @@ fun SettingsScreen(
                 .padding(padding)
                 .padding(16.dp)
         ) {
+            // App UI Language Selection
+            Row(
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(stringResource(R.string.settings_ui_language))
+                Box {
+                    TextButton(onClick = { languageExpanded = true }) {
+                        Text(if (uiState.uiLanguage == Language.FINNISH) "Suomi" else "English")
+                    }
+                    DropdownMenu(
+                        expanded = languageExpanded,
+                        onDismissRequest = { languageExpanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("English") },
+                            onClick = {
+                                viewModel.setUiLanguage(Language.ENGLISH)
+                                languageExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Suomi") },
+                            onClick = {
+                                viewModel.setUiLanguage(Language.FINNISH)
+                                languageExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
             // Auto-advance setting
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Enable auto-advance")
+                Text(stringResource(R.string.settings_auto_advance))
                 Switch(
                     checked = uiState.enableAutoAdvance,
                     onCheckedChange = { viewModel.setAutoAdvanceEnabled(it) }
@@ -104,7 +143,7 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Auto-next delay setting
-            Text("Auto-next delay: ${uiState.autoNextDelaySeconds} seconds")
+            Text(stringResource(R.string.settings_auto_next_delay, uiState.autoNextDelaySeconds))
             Slider(
                 value = uiState.autoNextDelaySeconds.toFloat(),
                 onValueChange = { viewModel.setAutoNextDelay(it.toInt()) },
@@ -123,7 +162,7 @@ fun SettingsScreen(
             ) {
                 Icon(Icons.Default.Info, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
-                Text("Image Credits & Licenses")
+                Text(stringResource(R.string.settings_credits_button))
             }
         }
     }
@@ -133,11 +172,11 @@ fun SettingsScreen(
 fun CreditItem(title: String, author: String, license: String, source: String, notes: String? = null) {
     Column {
         Text(text = title, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyLarge)
-        Text(text = "Author: $author", style = MaterialTheme.typography.bodyMedium)
-        Text(text = "License: $license", style = MaterialTheme.typography.bodyMedium)
-        Text(text = "Source: $source", fontSize = 10.sp, color = MaterialTheme.colorScheme.primary)
+        Text(text = stringResource(R.string.credit_author, author), style = MaterialTheme.typography.bodyMedium)
+        Text(text = stringResource(R.string.credit_license, license), style = MaterialTheme.typography.bodyMedium)
+        Text(text = stringResource(R.string.credit_source, source), fontSize = 10.sp, color = MaterialTheme.colorScheme.primary)
         notes?.let {
-            Text(text = "Notes: $it", style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 2.dp))
+            Text(text = stringResource(R.string.credit_notes, it), style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 2.dp))
         }
     }
 }

@@ -1,3 +1,48 @@
 <resources>
     <string name="app_name">Anatomy</string>
+
+    <!-- Quiz Start Screen -->
+    <string name="quiz_start_title">Anatomy Quiz</string>
+    <string name="quiz_start_subtitle">Tap a region to start</string>
+    <string name="label_type">Type:</string>
+    <string name="label_anatomy_language">Anatomy Language:</string>
+    <string name="quiz_mode_tap">Tap</string>
+    <string name="quiz_mode_choose">Choose</string>
+    <string name="quiz_mode_write">Write</string>
+
+    <!-- Quiz Screen -->
+    <string name="quiz_session_complete">Session Complete</string>
+    <string name="quiz_correct_count">%1$d / %2$d correct</string>
+    <string name="quiz_restart">Restart Full Session</string>
+    <string name="quiz_review_incorrect">Review Incorrect (%1$d)</string>
+    <string name="quiz_finish_session">Finish Session</string>
+    <string name="quiz_next">Next</string>
+    <string name="quiz_finish">Finish</string>
+    <string name="quiz_correct">Correct!</string>
+    <string name="quiz_incorrect_tapped">Incorrect! You tapped: %1$s</string>
+    <string name="quiz_write_label">Enter bone name in %1$s</string>
+    <string name="quiz_correct_answer_is">Correct answer: %1$s</string>
+    <string name="quiz_exit_title">End Session</string>
+    <string name="quiz_exit_message">Are you sure you want to quit? Your progress in this session will be lost.</string>
+    <string name="quiz_confirm">Confirm</string>
+    <string name="quiz_cancel">Cancel</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_ui_language">App Language</string>
+    <string name="settings_auto_advance">Enable auto-advance</string>
+    <string name="settings_auto_next_delay">Auto-next delay: %1$d seconds</string>
+    <string name="settings_credits_button">Image Credits &amp; Licenses</string>
+    <string name="settings_credits_title">Image Credits</string>
+    <string name="settings_close">Close</string>
+    <string name="credit_author">Author: %1$s</string>
+    <string name="credit_license">License: %1$s</string>
+    <string name="credit_source">Source: %1$s</string>
+    <string name="credit_notes">Notes: %1$s</string>
+
+    <!-- Content Descriptions -->
+    <string name="cd_back">Back</string>
+    <string name="cd_settings">Settings</string>
+    <string name="cd_end_quiz">End Quiz</string>
+    <string name="cd_skeleton_map">Full skeleton selector map</string>
 </resources>

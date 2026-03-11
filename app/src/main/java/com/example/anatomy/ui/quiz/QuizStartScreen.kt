@@ -17,8 +17,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.example.anatomy.R
 import com.example.anatomy.data.settings.QuizMode
@@ -74,16 +76,19 @@ fun QuizStartScreen(
                 onClick = onOpenSettings,
                 modifier = Modifier.align(Alignment.CenterStart)
             ) {
-                Icon(Icons.Default.Settings, contentDescription = "Settings")
+                Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.cd_settings))
             }
             
             Text(
-                text = "Anatomy Quiz",
+                text = stringResource(R.string.quiz_start_title),
                 style = MaterialTheme.typography.headlineMedium
             )
         }
 
-        Text("Tap a region to start", style = MaterialTheme.typography.bodyLarge)
+        Text(
+            text = stringResource(R.string.quiz_start_subtitle),
+            style = MaterialTheme.typography.bodyLarge
+        )
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -130,7 +135,7 @@ fun QuizStartScreen(
         ) {
             Image(
                 painter = painterResource(id = R.drawable.all_bones_base),
-                contentDescription = "Full skeleton selector map",
+                contentDescription = stringResource(R.string.cd_skeleton_map),
                 modifier = Modifier.fillMaxHeight()
             )
             
@@ -152,34 +157,38 @@ fun QuizStartScreen(
                 // Quiz Mode Selection Row
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth().height(40.dp)
+                    modifier = Modifier.fillMaxWidth().height(44.dp)
                 ) {
                     Text(
-                        text = "Type:",
+                        text = stringResource(R.string.label_type),
                         style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(end = 12.dp)
+                        modifier = Modifier.padding(end = 4.dp)
                     )
                     
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start
+                        modifier = Modifier.weight(1f),
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        QuizMode.values().forEach { mode ->
-                            RadioButton(
-                                selected = uiState.quizMode == mode,
-                                onClick = { viewModel.setQuizMode(mode) },
-                                modifier = Modifier.size(32.dp)
-                            )
-                            val label = when(mode) {
-                                QuizMode.TAP -> "Tap"
-                                QuizMode.CHOOSE -> "Choose"
-                                QuizMode.WRITE -> "Write"
+                        QuizMode.entries.forEach { mode ->
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                RadioButton(
+                                    selected = uiState.quizMode == mode,
+                                    onClick = { viewModel.setQuizMode(mode) },
+                                    modifier = Modifier.size(32.dp)
+                                )
+                                val label = when(mode) {
+                                    QuizMode.TAP -> stringResource(R.string.quiz_mode_tap)
+                                    QuizMode.CHOOSE -> stringResource(R.string.quiz_mode_choose)
+                                    QuizMode.WRITE -> stringResource(R.string.quiz_mode_write)
+                                }
+                                Text(
+                                    text = label, 
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontSize = 13.sp, // Slightly smaller to ensure fit
+                                    maxLines = 1
+                                )
                             }
-                            Text(
-                                text = label, 
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.padding(start = 2.dp, end = 24.dp)
-                            )
                         }
                     }
                 }
@@ -190,9 +199,9 @@ fun QuizStartScreen(
                     modifier = Modifier.fillMaxWidth().height(40.dp)
                 ) {
                     Text(
-                        text = "Language:",
+                        text = stringResource(R.string.label_anatomy_language),
                         style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.width(85.dp)
+                        modifier = Modifier.width(150.dp)
                     )
                     Box {
                         TextButton(
@@ -206,7 +215,7 @@ fun QuizStartScreen(
                             expanded = languageExpanded,
                             onDismissRequest = { languageExpanded = false }
                         ) {
-                            Language.values().forEach { lang ->
+                            Language.entries.forEach { lang ->
                                 DropdownMenuItem(
                                     text = { Text(lang.name) },
                                     onClick = {

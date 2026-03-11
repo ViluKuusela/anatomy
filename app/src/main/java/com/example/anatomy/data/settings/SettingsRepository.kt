@@ -9,6 +9,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.example.anatomy.ui.language.Language
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.util.Locale
 
 // Centralized DataStore for all app settings.
 private val Context.dataStore by preferencesDataStore(name = "settings")
@@ -24,6 +25,7 @@ class SettingsRepository(private val context: Context) {
         // General settings
         val ENABLE_AUTO_ADVANCE = booleanPreferencesKey("enable_auto_advance")
         val AUTO_NEXT_DELAY = intPreferencesKey("auto_next_delay")
+        val UI_LANGUAGE = stringPreferencesKey("ui_language")
 
         // Quiz start settings
         val ANATOMY_AREA = stringPreferencesKey("anatomy_area")
@@ -33,9 +35,13 @@ class SettingsRepository(private val context: Context) {
 
     // Flow for general app settings.
     val settingsFlow: Flow<SettingsData> = context.dataStore.data.map { prefs ->
+        // Use system language as default if no preference is saved
+        val systemLanguage = if (Locale.getDefault().language == "fi") Language.FINNISH else Language.ENGLISH
+        
         SettingsData(
             enableAutoAdvance = prefs[PreferencesKeys.ENABLE_AUTO_ADVANCE] ?: true,
-            autoNextDelaySeconds = prefs[PreferencesKeys.AUTO_NEXT_DELAY] ?: 3
+            autoNextDelaySeconds = prefs[PreferencesKeys.AUTO_NEXT_DELAY] ?: 3,
+            uiLanguage = Language.valueOf(prefs[PreferencesKeys.UI_LANGUAGE] ?: systemLanguage.name)
         )
     }
 
@@ -59,6 +65,12 @@ class SettingsRepository(private val context: Context) {
     suspend fun setAutoNextDelay(seconds: Int) {
         context.dataStore.edit { prefs ->
             prefs[PreferencesKeys.AUTO_NEXT_DELAY] = seconds
+        }
+    }
+
+    suspend fun setUiLanguage(language: Language) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.UI_LANGUAGE] = language.name
         }
     }
 

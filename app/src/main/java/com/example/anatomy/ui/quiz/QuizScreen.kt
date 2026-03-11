@@ -3,7 +3,8 @@ package com.example.anatomy.ui.quiz
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.Animatable
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -29,6 +30,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -40,6 +42,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.*
+import com.example.anatomy.R
 import com.example.anatomy.data.BoneRepository
 import com.example.anatomy.data.settings.QuizMode
 import com.example.anatomy.ui.components.AnswerButton
@@ -73,13 +76,13 @@ fun QuizScreen(
     val settingsState by settingsViewModel.uiState.collectAsState()
     val incorrectBones by viewModel.incorrectBones.collectAsState()
 
-    var countdown by remember { mutableStateOf(0) }
+    var countdown by remember { mutableIntStateOf(0) }
     var showEndSessionDialog by remember { mutableStateOf(false) }
     var isExiting by remember { mutableStateOf(false) }
     var boxSize by remember { mutableStateOf(IntSize.Zero) }
 
     // Zoom and pan states
-    var scale by remember { mutableStateOf(1f) }
+    var scale by remember { mutableFloatStateOf(1f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
 
     // Session progress info
@@ -123,20 +126,18 @@ fun QuizScreen(
     if (showEndSessionDialog) {
         AlertDialog(
             onDismissRequest = { showEndSessionDialog = false },
-            title = { Text("End Session") },
-            text = { Text("Are you sure you want to quit? Your progress in this session will be lost.") },
+            title = { Text(stringResource(R.string.quiz_exit_title)) },
+            text = { Text(stringResource(R.string.quiz_exit_message)) },
             confirmButton = { 
                 TextButton(onClick = { 
                     if (!isExiting) {
                         isExiting = true
                         onFinish()
                     }
-                }) { Text("Confirm") } 
+                }) { Text(stringResource(R.string.quiz_confirm)) } 
             },
             dismissButton = { 
-                TextButton(onClick = { 
-                    showEndSessionDialog = false 
-                }) { Text("Cancel") } 
+                TextButton(onClick = { showEndSessionDialog = false }) { Text(stringResource(R.string.quiz_cancel)) } 
             }
         )
     }
@@ -165,16 +166,16 @@ fun QuizScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Session Complete", style = MaterialTheme.typography.headlineMedium)
-            Text("${session.correctCount} / ${session.totalCount} correct")
+            Text(stringResource(R.string.quiz_session_complete), style = MaterialTheme.typography.headlineMedium)
+            Text(stringResource(R.string.quiz_correct_count, session.correctCount, session.totalCount))
             Spacer(modifier = Modifier.height(24.dp))
             Button(onClick = { viewModel.restart() }, modifier = Modifier.fillMaxWidth(0.7f)) {
-                Text("Restart Full Session")
+                Text(stringResource(R.string.quiz_restart))
             }
             if (incorrectBones.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(onClick = { viewModel.reviewIncorrect() }, modifier = Modifier.fillMaxWidth(0.7f), colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)) {
-                    Text("Review Incorrect (${incorrectBones.size})")
+                    Text(stringResource(R.string.quiz_review_incorrect, incorrectBones.size))
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
@@ -184,7 +185,7 @@ fun QuizScreen(
                     onFinish()
                 }
             }, modifier = Modifier.fillMaxWidth(0.7f)) {
-                Text("Finish Session")
+                Text(stringResource(R.string.quiz_finish_session))
             }
         }
         return
@@ -197,10 +198,33 @@ fun QuizScreen(
     }
     var writtenAnswer by remember { mutableStateOf("") }
     
+    // Controlled color and alpha for the highlight. 
+    // Using key(currentBone) forces a complete reset of these states when question changes.
+    val (highlightColorState, highlightAlphaState) = key(currentBone) {
+        val color = remember { Animatable(QuestionHighlightColor) }
+        val alpha = remember { Animatable(0f) }
+        color to alpha
+    }
+
     LaunchedEffect(currentBone) { 
         writtenAnswer = "" 
         scale = 1f
         offset = Offset.Zero
+        
+        // Ensure color is reset and then fade in
+        if (quizMode != QuizMode.TAP) {
+            highlightAlphaState.animateTo(1f, animationSpec = tween(durationMillis = 600))
+        }
+    }
+
+    // Update color only when an answer is given
+    LaunchedEffect(answerResult) {
+        if (answerResult is AnswerResult.Answered) {
+            val res = answerResult as AnswerResult.Answered
+            val target = if (res.wasCorrect) CorrectAnswerColor else FalseAnswerColor
+            highlightAlphaState.snapTo(1f) // Ensure fully visible for results
+            highlightColorState.animateTo(target, animationSpec = tween(300))
+        }
     }
 
     Column(
@@ -217,7 +241,7 @@ fun QuizScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             IconButton(onClick = onOpenSettings) { 
-                Icon(Icons.Default.Settings, "Settings", modifier = Modifier.size(20.dp)) 
+                Icon(Icons.Default.Settings, stringResource(R.string.cd_settings), modifier = Modifier.size(20.dp)) 
             }
             
             // Custom thick progress bar with text inside
@@ -237,7 +261,7 @@ fun QuizScreen(
                         .background(MaterialTheme.colorScheme.primary)
                 )
                 Text(
-                    text = "$answeredCount / ${session.totalCount}",
+                    text = stringResource(R.string.quiz_correct_count, answeredCount, session.totalCount),
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.labelSmall.copy(
@@ -249,7 +273,7 @@ fun QuizScreen(
             }
 
             IconButton(onClick = { handleExit() }) { 
-                Icon(Icons.Default.Close, "End", modifier = Modifier.size(20.dp)) 
+                Icon(Icons.Default.Close, stringResource(R.string.cd_end_quiz), modifier = Modifier.size(20.dp)) 
             }
         }
 
@@ -334,25 +358,11 @@ fun QuizScreen(
                 },
             contentAlignment = Alignment.Center
         ) {
-            val targetHighlightColor = when (val res = answerResult) {
-                is AnswerResult.Answered -> if (res.wasCorrect) CorrectAnswerColor else {
-                    if (quizMode == QuizMode.TAP) CorrectAnswerColor else FalseAnswerColor
-                }
-                is AnswerResult.Unanswered -> if (quizMode == QuizMode.TAP) Color.Transparent else QuestionHighlightColor
-            }
-            
-            // Animate highlight color changes
-            val animatedHighlightColor by animateColorAsState(
-                targetValue = targetHighlightColor,
-                animationSpec = tween(durationMillis = 300),
-                label = "highlightColorAnimation"
-            )
-            
             val errorBone = if (quizMode == QuizMode.TAP && result != null && !result.wasCorrect) result.selectedOption else null
 
             BoneImage(
                 bone = currentBone,
-                highlightColor = animatedHighlightColor,
+                highlightColor = highlightColorState.value.copy(alpha = highlightAlphaState.value),
                 errorBone = errorBone,
                 modifier = Modifier
                     .fillMaxSize()
@@ -398,7 +408,7 @@ fun QuizScreen(
                         OutlinedTextField(
                             value = writtenAnswer,
                             onValueChange = { writtenAnswer = it },
-                            label = { Text("Enter bone name in ${language.name.lowercase()}") },
+                            label = { Text(stringResource(R.string.quiz_write_label, language.name.lowercase())) },
                             singleLine = true,
                             enabled = !isAnswered,
                             modifier = Modifier.fillMaxWidth(),
@@ -421,7 +431,7 @@ fun QuizScreen(
                         )
                         if (isAnswered) {
                             Text(
-                                text = if (wasCorrect) "Correct!" else "Correct answer: ${currentBone.getName(language)}",
+                                text = if (wasCorrect) stringResource(R.string.quiz_correct) else stringResource(R.string.quiz_correct_answer_is, currentBone.getName(language)),
                                 color = if (wasCorrect) CorrectAnswerColor else FalseAnswerColor,
                                 style = MaterialTheme.typography.bodyLarge,
                                 modifier = Modifier.padding(top = 4.dp)
@@ -440,7 +450,7 @@ fun QuizScreen(
                         // Result text (only visible after answering)
                         if (answerResult is AnswerResult.Answered && result != null) {
                             Text(
-                                text = if (result.wasCorrect) "Correct!" else "Incorrect! You tapped: ${result.selectedOption?.getName(language)}",
+                                text = if (result.wasCorrect) stringResource(R.string.quiz_correct) else stringResource(R.string.quiz_incorrect_tapped, result.selectedOption?.getName(language) ?: ""),
                                 color = if (result.wasCorrect) CorrectAnswerColor else FalseAnswerColor,
                                 style = MaterialTheme.typography.titleMedium,
                                 textAlign = TextAlign.Center
@@ -455,7 +465,7 @@ fun QuizScreen(
         Box(modifier = Modifier.fillMaxWidth().height(48.dp), contentAlignment = Alignment.Center) {
             if (answerResult is AnswerResult.Answered) {
                 Button(onClick = viewModel::advance) {
-                    val nextButtonText = if (session.remainingBones.size == 1) "Finish" else "Next"
+                    val nextButtonText = if (session.remainingBones.size == 1) stringResource(R.string.quiz_finish) else stringResource(R.string.quiz_next)
                     Text(if (settingsState.enableAutoAdvance) "$nextButtonText ($countdown)" else nextButtonText)
                 }
             }

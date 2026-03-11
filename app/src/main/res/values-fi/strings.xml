@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name">Anatomy</string>
+
+    <!-- Quiz Start Screen -->
+    <string name="quiz_start_title">Anatomiavisa</string>
+    <string name="quiz_start_subtitle">Valitse alue aloittaaksesi</string>
+    <string name="label_type">Tyyppi:</string>
+    <string name="label_anatomy_language">Anatomian kieli:</string>
+    <string name="quiz_mode_tap">Kosketus</string>
+    <string name="quiz_mode_choose">Vaihtoehdot</string>
+    <string name="quiz_mode_write">Kirjoitus</string>
+
+    <!-- Quiz Screen -->
+    <string name="quiz_session_complete">Sessio valmis</string>
+    <string name="quiz_correct_count">%1$d / %2$d oikein</string>
+    <string name="quiz_restart">Aloita alusta</string>
+    <string name="quiz_review_incorrect">Kertaa väärät (%1$d)</string>
+    <string name="quiz_finish_session">Lopeta sessio</string>
+    <string name="quiz_next">Seuraava</string>
+    <string name="quiz_finish">Valmis</string>
+    <string name="quiz_correct">Oikein!</string>
+    <string name="quiz_incorrect_tapped">Väärin! Valitsit: %1$s</string>
+    <string name="quiz_write_label">Kirjoita luun nimi kielellä: %1$s</string>
+    <string name="quiz_correct_answer_is">Oikea vastaus: %1$s</string>
+    <string name="quiz_exit_title">Lopeta sessio</string>
+    <string name="quiz_exit_message">Haluatko varmasti lopettaa? Session edistyminen menetetään.</string>
+    <string name="quiz_confirm">Vahvista</string>
+    <string name="quiz_cancel">Peruuta</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Asetukset</string>
+    <string name="settings_ui_language">Sovelluksen kieli</string>
+    <string name="settings_auto_advance">Automaattinen eteneminen</string>
+    <string name="settings_auto_next_delay">Viive: %1$d sekuntia</string>
+    <string name="settings_credits_button">Kuvien tekijät ja lisenssit</string>
+    <string name="settings_credits_title">Kuvien tekijät</string>
+    <string name="settings_close">Sulje</string>
+    <string name="credit_author">Tekijä: %1$s</string>
+    <string name="credit_license">Lisenssi: %1$s</string>
+    <string name="credit_source">Lähde: %1$s</string>
+    <string name="credit_notes">Huomiot: %1$s</string>
+
+    <!-- Content Descriptions -->
+    <string name="cd_back">Takaisin</string>
+    <string name="cd_settings">Asetukset</string>
+    <string name="cd_end_quiz">Lopeta harjoitus</string>
+    <string name="cd_skeleton_map">Koko luurangon valintakartta</string>
+</resources>
