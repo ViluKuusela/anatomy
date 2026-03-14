@@ -21,6 +21,7 @@ import com.example.anatomy.ui.theme.FalseAnswerColor
 
 /**
  * A composable that displays a bone image, dynamically highlighting a specific part.
+ * Uses alpha = 0.5f for highlights to keep the underlying bone details visible.
  */
 @Composable
 fun BoneImage(
@@ -30,7 +31,7 @@ fun BoneImage(
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        // 1. Draw the base image.
+        // 1. Draw the base anatomy image.
         Image(
             painter = painterResource(id = bone.baseDrawableRes),
             contentDescription = bone.id,
@@ -38,7 +39,7 @@ fun BoneImage(
             contentScale = ContentScale.Fit
         )
 
-        // 2. Highlight error bone if present
+        // 2. Highlight error bone if user made a wrong tap.
         if (errorBone != null) {
             Image(
                 painter = painterResource(id = errorBone.highlightMaskRes),
@@ -50,7 +51,7 @@ fun BoneImage(
             )
         }
 
-        // 3. Highlight correct bone
+        // 3. Highlight the correct/target bone.
         Image(
             painter = painterResource(id = bone.highlightMaskRes),
             contentDescription = null,
@@ -62,6 +63,9 @@ fun BoneImage(
     }
 }
 
+/**
+ * Custom button for quiz options that handles success/error/idle states visually.
+ */
 @Composable
 fun AnswerButton(
     text: String,
@@ -70,22 +74,26 @@ fun AnswerButton(
     enabled: Boolean,
     onClick: () -> Unit
 ) {
-    val colors = ButtonDefaults.buttonColors(
-        disabledContainerColor = when {
-            isSelected && !isCorrect -> FalseAnswerColor
-            isCorrect -> CorrectAnswerColor
-            else -> MaterialTheme.colorScheme.surfaceVariant
-        },
-        disabledContentColor = when {
-            isSelected -> MaterialTheme.colorScheme.onPrimary
-            else -> MaterialTheme.colorScheme.onSurfaceVariant
-        }
-    )
+    val containerColor = when {
+        isCorrect -> CorrectAnswerColor
+        isSelected && !isCorrect -> FalseAnswerColor
+        else -> MaterialTheme.colorScheme.surfaceVariant
+    }
+
+    val contentColor = when {
+        isCorrect || isSelected -> MaterialTheme.colorScheme.onPrimary
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
 
     Button(
         onClick = onClick,
         enabled = enabled,
-        colors = colors,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = containerColor,
+            contentColor = contentColor,
+            disabledContainerColor = containerColor,
+            disabledContentColor = contentColor
+        ),
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(text)

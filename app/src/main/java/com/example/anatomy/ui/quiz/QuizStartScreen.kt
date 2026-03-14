@@ -42,6 +42,16 @@ fun QuizStartScreen(
     var languageExpanded by remember { mutableStateOf(false) }
     var boxSize by remember { mutableStateOf(IntSize.Zero) }
 
+    // Helper to get localized name for the Language enum
+    @Composable
+    fun Language.getDisplayName(): String {
+        return when (this) {
+            Language.LATIN -> stringResource(R.string.lang_latin)
+            Language.ENGLISH -> stringResource(R.string.lang_english)
+            Language.FINNISH -> stringResource(R.string.lang_finnish)
+        }
+    }
+
     // Pre-calculate bitmaps for pixel-perfect hit testing on the full skeleton map
     val areaMasks = remember {
         listOf(
@@ -185,7 +195,7 @@ fun QuizStartScreen(
                                 Text(
                                     text = label, 
                                     style = MaterialTheme.typography.bodyMedium,
-                                    fontSize = 13.sp, // Slightly smaller to ensure fit
+                                    fontSize = 13.sp,
                                     maxLines = 1
                                 )
                             }
@@ -209,7 +219,7 @@ fun QuizStartScreen(
                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
                             modifier = Modifier.heightIn(min = 32.dp)
                         ) {
-                            Text(uiState.language.name)
+                            Text(uiState.language.getDisplayName())
                         }
                         DropdownMenu(
                             expanded = languageExpanded,
@@ -217,7 +227,7 @@ fun QuizStartScreen(
                         ) {
                             Language.entries.forEach { lang ->
                                 DropdownMenuItem(
-                                    text = { Text(lang.name) },
+                                    text = { Text(lang.getDisplayName()) },
                                     onClick = {
                                         viewModel.setLanguage(lang)
                                         languageExpanded = false

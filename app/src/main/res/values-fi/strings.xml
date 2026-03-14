@@ -9,10 +9,15 @@
     <string name="quiz_mode_tap">Kosketus</string>
     <string name="quiz_mode_choose">Vaihtoehdot</string>
     <string name="quiz_mode_write">Kirjoitus</string>
+    <string name="lang_latin">latina</string>
+    <string name="lang_english">englanti</string>
+    <string name="lang_finnish">suomi</string>
+    <string name="action_review_difficult">Kertaa vaikeat luut (%1$d)</string>
 
     <!-- Quiz Screen -->
     <string name="quiz_session_complete">Sessio valmis</string>
     <string name="quiz_correct_count">%1$d / %2$d oikein</string>
+    <string name="quiz_progress_count">%1$d / %2$d</string>
     <string name="quiz_restart">Aloita alusta</string>
     <string name="quiz_review_incorrect">Kertaa väärät (%1$d)</string>
     <string name="quiz_finish_session">Lopeta sessio</string>
@@ -20,12 +25,13 @@
     <string name="quiz_finish">Valmis</string>
     <string name="quiz_correct">Oikein!</string>
     <string name="quiz_incorrect_tapped">Väärin! Valitsit: %1$s</string>
-    <string name="quiz_write_label">Kirjoita luun nimi kielellä: %1$s</string>
+    <string name="quiz_write_label">Kirjoita luun nimi kielellä %1$s</string>
     <string name="quiz_correct_answer_is">Oikea vastaus: %1$s</string>
     <string name="quiz_exit_title">Lopeta sessio</string>
     <string name="quiz_exit_message">Haluatko varmasti lopettaa? Session edistyminen menetetään.</string>
     <string name="quiz_confirm">Vahvista</string>
     <string name="quiz_cancel">Peruuta</string>
+    <string name="quiz_show_me">Näytä luu</string>
 
     <!-- Settings Screen -->
     <string name="settings_title">Asetukset</string>
@@ -35,6 +41,7 @@
     <string name="settings_credits_button">Kuvien tekijät ja lisenssit</string>
     <string name="settings_credits_title">Kuvien tekijät</string>
     <string name="settings_close">Sulje</string>
+    <string name="settings_clear_history">Tyhjennä oppimishistoria</string>
     <string name="credit_author">Tekijä: %1$s</string>
     <string name="credit_license">Lisenssi: %1$s</string>
     <string name="credit_source">Lähde: %1$s</string>

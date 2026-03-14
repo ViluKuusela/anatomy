@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.Color
 // Pre-defined semantic colors for quiz answers
 val CorrectAnswerColor = Color(0xFF56B763)
 val FalseAnswerColor = Color(0xFFD32F2F)
-val QuestionHighlightColor = Color(0XFF0000FF) // Orange for the question mask
+val QuestionHighlightColor = Color(0xFF9C27B0) // Deep Purple for high contrast against white, yellow, and blue
 
 // Light Theme Colors
 val md_theme_light_primary = Color(0xFF0061A4)

@@ -7,12 +7,17 @@
     <string name="label_type">Type:</string>
     <string name="label_anatomy_language">Anatomy Language:</string>
     <string name="quiz_mode_tap">Tap</string>
-    <string name="quiz_mode_choose">Choose</string>
+    <string name="quiz_mode_choose">Options</string>
     <string name="quiz_mode_write">Write</string>
+    <string name="lang_latin">Latin</string>
+    <string name="lang_english">English</string>
+    <string name="lang_finnish">Finnish</string>
+    <string name="action_review_difficult">Review Difficult Bones (%1$d)</string>
 
     <!-- Quiz Screen -->
     <string name="quiz_session_complete">Session Complete</string>
     <string name="quiz_correct_count">%1$d / %2$d correct</string>
+    <string name="quiz_progress_count">%1$d / %2$d</string>
     <string name="quiz_restart">Restart Full Session</string>
     <string name="quiz_review_incorrect">Review Incorrect (%1$d)</string>
     <string name="quiz_finish_session">Finish Session</string>
@@ -26,6 +31,7 @@
     <string name="quiz_exit_message">Are you sure you want to quit? Your progress in this session will be lost.</string>
     <string name="quiz_confirm">Confirm</string>
     <string name="quiz_cancel">Cancel</string>
+    <string name="quiz_show_me">Show Me</string>
 
     <!-- Settings Screen -->
     <string name="settings_title">Settings</string>
@@ -35,6 +41,7 @@
     <string name="settings_credits_button">Image Credits &amp; Licenses</string>
     <string name="settings_credits_title">Image Credits</string>
     <string name="settings_close">Close</string>
+    <string name="settings_clear_history">Clear Learning History</string>
     <string name="credit_author">Author: %1$s</string>
     <string name="credit_license">License: %1$s</string>
     <string name="credit_source">Source: %1$s</string>

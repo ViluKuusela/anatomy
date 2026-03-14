@@ -10,15 +10,12 @@ import kotlinx.coroutines.flow.update
 
 // Represents the result of an answer submission.
 sealed class AnswerResult {
-    // The user has not answered the question yet.
     object Unanswered : AnswerResult()
-
-    // The user has answered the question.
-    data class Answered(val wasCorrect: Boolean, val selectedOption: Bone? = null) : AnswerResult()
+    data class Answered(val wasCorrect: Boolean, val selectedOption: Bone? = null, val wasRevealed: Boolean = false) : AnswerResult()
 }
 
 class QuizViewModel(
-    private val allBones: List<Bone> // Keep a private copy of all bones for the session
+    private val allBones: List<Bone>
 ) : ViewModel() {
 
     private val _session = MutableStateFlow(
@@ -34,59 +31,64 @@ class QuizViewModel(
     private val _answerResult = MutableStateFlow<AnswerResult>(AnswerResult.Unanswered)
     val answerResult: StateFlow<AnswerResult> = _answerResult
 
-    // Track bones that were answered incorrectly
     private val _incorrectBones = MutableStateFlow<List<Bone>>(emptyList())
     val incorrectBones: StateFlow<List<Bone>> = _incorrectBones
 
-    /**
-     * Processes a user's selection in a multiple-choice question.
-     */
+    private val _isHintActive = MutableStateFlow(false)
+    val isHintActive: StateFlow<Boolean> = _isHintActive
+
+    private val _helpUsedForCurrent = MutableStateFlow(false)
+
     fun selectAnswer(bone: Bone) {
         if (_answerResult.value is AnswerResult.Answered) return
 
         val currentBone = _session.value.currentBone ?: return
         val isCorrect = bone.id == currentBone.id
         
-        if (isCorrect) {
-            _session.update {
-                it.copy(correctCount = it.correctCount + 1)
-            }
-        } else {
+        val countAsCorrect = isCorrect && !_helpUsedForCurrent.value
+
+        if (countAsCorrect) {
+            _session.update { it.copy(correctCount = it.correctCount + 1) }
+        } else if (!isCorrect && !_helpUsedForCurrent.value) {
             _incorrectBones.update { it + currentBone }
         }
-        _answerResult.value = AnswerResult.Answered(isCorrect, bone)
+        
+        _answerResult.value = AnswerResult.Answered(isCorrect, bone, wasRevealed = _helpUsedForCurrent.value)
     }
 
-    /**
-     * Processes a user's written answer.
-     * Supports multiple acceptable names (e.g., singular/plural) separated by '|'.
-     */
     fun submitWrittenAnswer(answer: String, language: Language) {
         if (_answerResult.value is AnswerResult.Answered) return
 
         val currentBone = _session.value.currentBone ?: return
         val acceptedNames = currentBone.getAllNames(language)
-        val trimmedAnswer = answer.trim()
+        val isCorrect = acceptedNames.any { it.equals(answer.trim(), ignoreCase = true) }
 
-        // Check if the answer matches any of the accepted names (case-insensitive)
-        val isCorrect = acceptedNames.any { it.equals(trimmedAnswer, ignoreCase = true) }
+        val countAsCorrect = isCorrect && !_helpUsedForCurrent.value
 
-        if (isCorrect) {
+        if (countAsCorrect) {
             _session.update { it.copy(correctCount = it.correctCount + 1) }
-        } else {
+        } else if (!isCorrect && !_helpUsedForCurrent.value) {
             _incorrectBones.update { it + currentBone }
         }
 
-        _answerResult.value = AnswerResult.Answered(isCorrect)
+        _answerResult.value = AnswerResult.Answered(isCorrect, wasRevealed = _helpUsedForCurrent.value)
     }
 
-    /**
-     * Advances to the next question in the quiz.
-     */
+    fun setHintVisible(visible: Boolean) {
+        if (_answerResult.value is AnswerResult.Answered) return
+        
+        _isHintActive.value = visible
+        if (visible && !_helpUsedForCurrent.value) {
+            _helpUsedForCurrent.value = true
+            val currentBone = _session.value.currentBone ?: return
+            if (!_incorrectBones.value.contains(currentBone)) {
+                _incorrectBones.update { it + currentBone }
+            }
+        }
+    }
+
     fun advance() {
         val remaining = _session.value.remainingBones.toMutableList()
-
-        // Remove current bone from the list
         _session.value.currentBone?.let { remaining.remove(it) }
 
         _session.update {
@@ -96,11 +98,10 @@ class QuizViewModel(
             )
         }
         _answerResult.value = AnswerResult.Unanswered
+        _helpUsedForCurrent.value = false
+        _isHintActive.value = false
     }
 
-    /**
-     * Restarts the quiz with the full list of bones.
-     */
     fun restart() {
         _session.value = QuizSession(
             remainingBones = allBones.shuffled(),
@@ -110,11 +111,10 @@ class QuizViewModel(
         )
         _answerResult.value = AnswerResult.Unanswered
         _incorrectBones.value = emptyList()
+        _helpUsedForCurrent.value = false
+        _isHintActive.value = false
     }
 
-    /**
-     * Starts a new session containing only the bones answered incorrectly.
-     */
     fun reviewIncorrect() {
         val bonesToReview = _incorrectBones.value.shuffled()
         if (bonesToReview.isEmpty()) return
@@ -127,5 +127,7 @@ class QuizViewModel(
         )
         _answerResult.value = AnswerResult.Unanswered
         _incorrectBones.value = emptyList()
+        _helpUsedForCurrent.value = false
+        _isHintActive.value = false
     }
 }
