@@ -2,11 +2,19 @@ package com.example.anatomy.ui.quiz
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.view.MotionEvent
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.Animatable
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,17 +23,22 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,10 +47,11 @@ import androidx.core.graphics.createBitmap
 import com.example.anatomy.R
 import com.example.anatomy.data.settings.QuizMode
 import com.example.anatomy.ui.language.Language
+import androidx.core.graphics.get
 
 /**
  * The modernized entry screen of the app.
- * Integrated UI elements that blend into the background for a clean, unified look.
+ * Optimized for mobile screens with improved Dark Mode details and combined UI controls.
  */
 @Composable
 fun QuizStartScreen(
@@ -49,8 +63,18 @@ fun QuizStartScreen(
     val context = LocalContext.current
     var languageExpanded by remember { mutableStateOf(false) }
     var boxSize by remember { mutableStateOf(IntSize.Zero) }
+    val isDark = isSystemInDarkTheme()
 
-    // Helper to get localized name for the Language enum
+    // Dynamic professional palette
+    val primaryColor = if (isDark) Color(0xFF9ECAFF).copy(alpha = 0.9f) else Color(0xFF0061A4)
+    val textColor = if (isDark) Color(0xFFB0BEC5) else Color.DarkGray
+
+    val backgroundBrush = if (isDark) {
+        Brush.verticalGradient(colors = listOf(Color(0xFF001529), Color(0xFF121212)))
+    } else {
+        Brush.verticalGradient(colors = listOf(Color(0xFFE3F2FD), Color(0xFFF5F5F5)))
+    }
+
     @Composable
     fun Language.getDisplayName(): String {
         return when (this) {
@@ -60,7 +84,6 @@ fun QuizStartScreen(
         }
     }
 
-    // Pre-calculate bitmaps for pixel-perfect hit testing on the full skeleton map
     val areaMasks = remember {
         listOf(
             "Hand" to R.drawable.all_bones_hands,
@@ -78,14 +101,12 @@ fun QuizStartScreen(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize().background(Brush.verticalGradient(
-        colors = listOf(Color(0xFFE3F2FD), Color(0xFFF5F5F5)) 
-    ))) {
+    Box(modifier = Modifier.fillMaxSize().background(backgroundBrush)) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .systemBarsPadding()
-                .padding(horizontal = 20.dp, vertical = 0.dp),
+                .padding(horizontal = 16.dp, vertical = 0.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // --- HEADER ---
@@ -100,7 +121,7 @@ fun QuizStartScreen(
                     Icon(
                         Icons.Default.Settings,
                         contentDescription = stringResource(R.string.cd_settings),
-                        tint = Color(0xFF0061A4)
+                        tint = primaryColor
                     )
                 }
 
@@ -108,14 +129,14 @@ fun QuizStartScreen(
                     text = stringResource(R.string.quiz_start_title),
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF0061A4)
+                    color = primaryColor
                 )
             }
 
             Text(
                 text = stringResource(R.string.quiz_start_subtitle),
                 style = MaterialTheme.typography.bodyLarge,
-                color = Color.DarkGray
+                color = textColor
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -125,6 +146,7 @@ fun QuizStartScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
+                    .clipToBounds()
                     .onGloballyPositioned { boxSize = it.size }
                     .pointerInput(uiState) {
                         detectTapGestures { offset ->
@@ -142,8 +164,7 @@ fun QuizStartScreen(
                                         for (dy in -radius..radius) {
                                             val x = (centerX + dx).coerceIn(0, bitmap.width - 1)
                                             val y = (centerY + dy).coerceIn(0, bitmap.height - 1)
-                                            // Changed from bitmap[x, y] to bitmap.getPixel(x, y) to fix compile error
-                                            if (android.graphics.Color.alpha(bitmap.getPixel(x, y)) > 0) {
+                                            if (android.graphics.Color.alpha(bitmap[x, y]) > 0) {
                                                 isHit = true
                                                 break
                                             }
@@ -162,32 +183,35 @@ fun QuizStartScreen(
                     },
                 contentAlignment = Alignment.Center
             ) {
-                // Subtle glow behind skeleton
+                // Background glow (enhanced visibility in dark mode)
                 Box(
                     modifier = Modifier
                         .size(300.dp)
                         .blur(50.dp)
                         .background(
                             Brush.radialGradient(
-                                colors = listOf(Color(0xFFBBDEFB), Color.Transparent)
+                                colors = if (isDark) {
+                                    listOf(primaryColor.copy(alpha = 0.4f), Color.Transparent)
+                                } else {
+                                    listOf(Color(0xFFBBDEFB), Color.Transparent)
+                                }
                             ),
                             shape = CircleShape
                         )
                 )
 
-                // The skeleton base image
                 Image(
                     painter = painterResource(id = R.drawable.all_bones_base),
                     contentDescription = stringResource(R.string.cd_skeleton_map),
-                    modifier = Modifier.fillMaxHeight()
+                    modifier = Modifier.fillMaxHeight(),
                 )
 
-                // Refined Harmonic Regions
+                // Manual color regions (preserved)
                 ImageMask(R.drawable.all_bones_skull, Color(0x800091C8))
-                ImageMask(R.drawable.all_bones_upper, Color(0x8000C87D))
-                ImageMask(R.drawable.all_bones_hands, Color(0x8000BCD4))
-                ImageMask(R.drawable.all_bones_lower, Color(0x804CE1C3))
-                ImageMask(R.drawable.all_bones_feet,  Color(0x7300AFAF))
+                ImageMask(R.drawable.all_bones_upper, Color(0x804CE1C3))
+                ImageMask(R.drawable.all_bones_hands, Color(0x7300AFAF))
+                ImageMask(R.drawable.all_bones_lower, Color(0x8012BE7D))
+                ImageMask(R.drawable.all_bones_feet,  Color(0x8000BCD4))
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -196,100 +220,106 @@ fun QuizStartScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 24.dp)
+                    .padding(bottom = 32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Quiz Mode Selection
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth().height(48.dp)
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = stringResource(R.string.label_type),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Color(0xFF0061A4),
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.weight(1f),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        QuizMode.entries.forEach { mode ->
-                            val isSelected = uiState.quizMode == mode
-                            FilterChip(
+                    QuizMode.entries.forEach { mode ->
+                        val isSelected = uiState.quizMode == mode
+                        FilterChip(
+                            selected = isSelected,
+                            onClick = { viewModel.setQuizMode(mode) },
+                            label = {
+                                val label = when(mode) {
+                                    QuizMode.TAP -> stringResource(R.string.quiz_mode_tap)
+                                    QuizMode.CHOOSE -> stringResource(R.string.quiz_mode_choose)
+                                    QuizMode.WRITE -> stringResource(R.string.quiz_mode_write)
+                                }
+                                Text(
+                                    text = label.uppercase(),
+                                    fontSize = 11.sp,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                )
+                            },
+                            border = FilterChipDefaults.filterChipBorder(
+                                enabled = true,
                                 selected = isSelected,
-                                onClick = { viewModel.setQuizMode(mode) },
-                                label = {
-                                    val label = when(mode) {
-                                        QuizMode.TAP -> stringResource(R.string.quiz_mode_tap)
-                                        QuizMode.CHOOSE -> stringResource(R.string.quiz_mode_choose)
-                                        QuizMode.WRITE -> stringResource(R.string.quiz_mode_write)
-                                    }
-                                    Text(
-                                        text = label, 
-                                        fontSize = 12.sp, 
-                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
-                                    )
-                                },
-                                border = FilterChipDefaults.filterChipBorder(
-                                    enabled = true,
-                                    selected = isSelected,
-                                    borderColor = Color(0xFF0061A4),
-                                    selectedBorderColor = Color(0xFF0061A4),
-                                    borderWidth = 1.5.dp,
-                                    selectedBorderWidth = 3.dp
-                                ),
-                                colors = FilterChipDefaults.filterChipColors(
-                                    containerColor = Color.Transparent,
-                                    labelColor = Color(0xFF0061A4),
-                                    selectedContainerColor = Color(0xFF0061A4),
-                                    selectedLabelColor = Color.White
-                                ),
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                        }
+                                borderColor = primaryColor,
+                                selectedBorderColor = primaryColor,
+                                borderWidth = 1.dp,
+                                selectedBorderWidth = 2.5.dp
+                            ),
+                            colors = FilterChipDefaults.filterChipColors(
+                                containerColor = Color.Transparent,
+                                labelColor = primaryColor,
+                                selectedContainerColor = primaryColor,
+                                selectedLabelColor = if (isDark) Color.Black else Color.White
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                // Language Selection
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth().height(48.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.label_anatomy_language),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Color(0xFF0061A4),
-                        modifier = Modifier.width(150.dp)
-                    )
-                    Box(modifier = Modifier.weight(1f)) {
-                        OutlinedButton(
-                            onClick = { languageExpanded = true },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            border = BorderStroke(2.dp, Color(0xFF0061A4)),
-                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp)
-                        ) {
-                            Text(
-                                uiState.language.getDisplayName(),
-                                color = Color(0xFF0061A4),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
+                // Combined Language Selection Button
+                // Pre-calculate language names to ensure correct localization inside the Popup window
+                val langNames = Language.entries.associateWith { lang ->
+                    when(lang) {
+                        Language.LATIN -> stringResource(R.string.lang_latin)
+                        Language.ENGLISH -> stringResource(R.string.lang_english)
+                        Language.FINNISH -> stringResource(R.string.lang_finnish)
+                    }.uppercase()
+                }
+
+                Box(modifier = Modifier.fillMaxWidth(0.85f)) {
+                    val currentLangName = langNames[uiState.language] ?: ""
+
+                    OutlinedButton(
+                        onClick = { languageExpanded = true },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        border = BorderStroke(2.dp, primaryColor),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = primaryColor)
+                    ) {
+                        val label = stringResource(R.string.label_anatomy_language).replace("\n", " ")
+                        Text(
+                            text = "$label $currentLangName",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+                    // Anchor the menu to the bottom end (right side) of the parent Box
+                    Box(modifier = Modifier.align(Alignment.BottomEnd)) {
                         DropdownMenu(
                             expanded = languageExpanded,
                             onDismissRequest = { languageExpanded = false },
-                            modifier = Modifier.background(Color.White)
+                            offset = DpOffset(x = 0.dp, y = 4.dp),
+                            modifier = Modifier.background(if (isDark) Color(0xFF1A1C1E) else Color.White)
                         ) {
                             Language.entries.forEach { lang ->
+                                val langName = langNames[lang] ?: ""
                                 DropdownMenuItem(
-                                    text = { Text(lang.getDisplayName(), color = Color(0xFF0061A4)) },
-                                    onClick = {
+                                    text = {
+                                        Text(
+                                            text = langName,
+                                            color = primaryColor,
+                                            fontWeight = FontWeight.Bold,
+                                            textAlign = TextAlign.Start
+                                        ) 
+                                    },
+                                    onClick = { 
                                         viewModel.setLanguage(lang)
-                                        languageExpanded = false
+                                        languageExpanded = false 
                                     }
                                 )
                             }

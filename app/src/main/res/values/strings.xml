@@ -5,13 +5,13 @@
     <string name="quiz_start_title">Anatomy Quiz</string>
     <string name="quiz_start_subtitle">Tap a region to start</string>
     <string name="label_type">Type:</string>
-    <string name="label_anatomy_language">Anatomy Language:</string>
+    <string name="label_anatomy_language">Anatomy\nLanguage:</string>
     <string name="quiz_mode_tap">Tap</string>
-    <string name="quiz_mode_choose">Options</string>
+    <string name="quiz_mode_choose">Choose</string>
     <string name="quiz_mode_write">Write</string>
-    <string name="lang_latin">Latin</string>
-    <string name="lang_english">English</string>
-    <string name="lang_finnish">Finnish</string>
+    <string name="lang_latin">LATIN</string>
+    <string name="lang_english">ENGLISH</string>
+    <string name="lang_finnish">FINNISH</string>
     <string name="action_review_difficult">Review Difficult Bones (%1$d)</string>
 
     <!-- Quiz Screen -->

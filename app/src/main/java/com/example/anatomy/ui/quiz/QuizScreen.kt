@@ -196,9 +196,10 @@ fun QuizScreen(
     // Atomic update for visual transitions to prevent flickering
     LaunchedEffect(currentBone, answerResult, isHintActive) {
         if (answerResult is AnswerResult.Unanswered) {
-            highlightAlphaState.snapTo(0f)
-            val resetColor = if (quizMode == QuizMode.TAP) CorrectAnswerColor else QuestionHighlightColor
-            highlightColorState.snapTo(resetColor)
+            if (quizMode == QuizMode.TAP) {
+                highlightAlphaState.snapTo(0f)
+                highlightColorState.snapTo(CorrectAnswerColor)
+            }
             writtenAnswer = ""
             scale = 1f
             offset = Offset.Zero

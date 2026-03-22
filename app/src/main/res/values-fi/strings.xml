@@ -5,13 +5,13 @@
     <string name="quiz_start_title">Anatomiavisa</string>
     <string name="quiz_start_subtitle">Valitse alue aloittaaksesi</string>
     <string name="label_type">Tyyppi:</string>
-    <string name="label_anatomy_language">Anatomian kieli:</string>
-    <string name="quiz_mode_tap">Kosketus</string>
-    <string name="quiz_mode_choose">Vaihtoehdot</string>
-    <string name="quiz_mode_write">Kirjoitus</string>
-    <string name="lang_latin">latina</string>
-    <string name="lang_english">englanti</string>
-    <string name="lang_finnish">suomi</string>
+    <string name="label_anatomy_language">Anatomian\nkieli:</string>
+    <string name="quiz_mode_tap">KOSKETUS</string>
+    <string name="quiz_mode_choose">VAIHTOEHDOT</string>
+    <string name="quiz_mode_write">KIRJOITUS</string>
+    <string name="lang_latin">LATINA</string>
+    <string name="lang_english">ENGLANTI</string>
+    <string name="lang_finnish">SUOMI</string>
     <string name="action_review_difficult">Kertaa vaikeat luut (%1$d)</string>
 
     <!-- Quiz Screen -->
