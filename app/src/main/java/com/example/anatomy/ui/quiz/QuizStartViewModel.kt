@@ -11,13 +11,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class QuizStartViewModel(private val repository: SettingsRepository) : ViewModel() {
+class QuizStartViewModel(
+    private val repository: SettingsRepository,
+    initialState: QuizStartUiState
+) : ViewModel() {
 
     val uiState: StateFlow<QuizStartUiState> = repository.quizStartUiState
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = QuizStartUiState("Hand", Language.LATIN, QuizMode.CHOOSE)
+            initialValue = initialState
         )
 
     fun setAnatomyArea(anatomyArea: String) {

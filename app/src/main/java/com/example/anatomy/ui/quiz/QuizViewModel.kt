@@ -87,6 +87,18 @@ class QuizViewModel(
         }
     }
 
+    fun skip() {
+        if (_answerResult.value is AnswerResult.Answered) return
+        
+        val currentBone = _session.value.currentBone ?: return
+        // Mark as incorrect if not already marked
+        if (!_incorrectBones.value.contains(currentBone)) {
+            _incorrectBones.update { it + currentBone }
+        }
+        
+        advance()
+    }
+
     fun advance() {
         val remaining = _session.value.remainingBones.toMutableList()
         _session.value.currentBone?.let { remaining.remove(it) }

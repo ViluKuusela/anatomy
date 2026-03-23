@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.anatomy.data.settings.QuizMode
+import com.example.anatomy.data.settings.QuizStartUiState
 import com.example.anatomy.data.settings.SettingsRepository
 import com.example.anatomy.ui.language.Language
 import com.example.anatomy.ui.quiz.QuizScreen
@@ -21,7 +22,7 @@ import com.example.anatomy.ui.settings.SettingsViewModel
  * AppNavHost is the main navigation component of the application.
  */
 @Composable
-fun AppNavHost() {
+fun AppNavHost(quizStartInitialState: QuizStartUiState) {
     val navController = rememberNavController()
     val context = LocalContext.current
 
@@ -33,7 +34,7 @@ fun AppNavHost() {
     ) {
         composable(Screen.QuizStart.route) {
             val quizStartViewModel: QuizStartViewModel = viewModel {
-                QuizStartViewModel(settingsRepository)
+                QuizStartViewModel(settingsRepository, quizStartInitialState)
             }
             QuizStartScreen(
                 viewModel = quizStartViewModel,

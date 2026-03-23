@@ -1,5 +1,6 @@
 package com.example.anatomy.ui.settings
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -10,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -133,24 +135,36 @@ fun SettingsScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(stringResource(R.string.settings_auto_advance))
+                Text(stringResource(R.string.settings_auto_advance), fontWeight = FontWeight.Medium)
                 Switch(
                     checked = uiState.enableAutoAdvance,
                     onCheckedChange = { viewModel.setAutoAdvanceEnabled(it) }
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Auto-next delay setting
-            Text(stringResource(R.string.settings_auto_next_delay, uiState.autoNextDelaySeconds))
-            Slider(
-                value = uiState.autoNextDelaySeconds.toFloat(),
-                onValueChange = { viewModel.setAutoNextDelay(it.toInt()) },
-                valueRange = 1f..10f,
-                steps = 8,
-                enabled = uiState.enableAutoAdvance
-            )
+            // Auto-next delay setting (nested/dependent look)
+            val alpha by animateFloatAsState(if (uiState.enableAutoAdvance) 1f else 0.5f, label = "alpha")
+            
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, top = 8.dp)
+                    .alpha(alpha)
+            ) {
+                Text(
+                    text = stringResource(R.string.settings_auto_next_delay, uiState.autoNextDelaySeconds),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = if (uiState.enableAutoAdvance) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Slider(
+                    value = uiState.autoNextDelaySeconds.toFloat(),
+                    onValueChange = { viewModel.setAutoNextDelay(it.toInt()) },
+                    valueRange = 1f..10f,
+                    steps = 8,
+                    enabled = uiState.enableAutoAdvance,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.weight(1f))
 

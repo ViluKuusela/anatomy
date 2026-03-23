@@ -268,7 +268,6 @@ fun QuizStartScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Combined Language Selection Button
-                // Pre-calculate language names to ensure correct localization inside the Popup window
                 val langNames = Language.entries.associateWith { lang ->
                     when(lang) {
                         Language.LATIN -> stringResource(R.string.lang_latin)
@@ -277,12 +276,12 @@ fun QuizStartScreen(
                     }.uppercase()
                 }
 
-                Box(modifier = Modifier.fillMaxWidth(0.85f)) {
+                Box(contentAlignment = Alignment.Center) {
                     val currentLangName = langNames[uiState.language] ?: ""
 
                     OutlinedButton(
                         onClick = { languageExpanded = true },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.wrapContentWidth(),
                         shape = RoundedCornerShape(12.dp),
                         border = BorderStroke(2.dp, primaryColor),
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
@@ -294,6 +293,7 @@ fun QuizStartScreen(
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold,
                             fontSize = 12.sp,
+                            maxLines = 1,
                             textAlign = TextAlign.Center
                         )
                     }

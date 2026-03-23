@@ -557,7 +557,7 @@ object BoneRepository {
             names = mapOf(
                 Language.LATIN to "Os ischii | Ossa ischia",
                 Language.ENGLISH to "Ischium | Ischia",
-                Language.FINNISH to "Istuinaluu | Istuinaluut"
+                Language.FINNISH to "Istuinluu | Istuinluut"
             ),
             baseDrawableRes = R.drawable.lower_bones_base,
             highlightMaskRes = R.drawable.lower_bones_ischii

@@ -12,6 +12,12 @@
     <string name="lang_latin">LATINA</string>
     <string name="lang_english">ENGLANTI</string>
     <string name="lang_finnish">SUOMI</string>
+    
+    <!-- Language variants for sentences -->
+    <string name="lang_in_latin">latinaksi</string>
+    <string name="lang_in_english">englanniksi</string>
+    <string name="lang_in_finnish">suomeksi</string>
+
     <string name="action_review_difficult">Kertaa vaikeat luut (%1$d)</string>
 
     <!-- Quiz Screen -->
@@ -25,13 +31,14 @@
     <string name="quiz_finish">Valmis</string>
     <string name="quiz_correct">Oikein!</string>
     <string name="quiz_incorrect_tapped">Väärin! Valitsit: %1$s</string>
-    <string name="quiz_write_label">Kirjoita luun nimi kielellä %1$s</string>
+    <string name="quiz_write_label">Kirjoita luun nimi %1$s</string>
     <string name="quiz_correct_answer_is">Oikea vastaus: %1$s</string>
     <string name="quiz_exit_title">Lopeta sessio</string>
-    <string name="quiz_exit_message">Haluatko varmasti lopettaa? Session edistyminen menetetään.</string>
+    <string name="quiz_exit_message">Haluatko varmasti lopettaa?\nSession edistyminen menetetään.</string>
     <string name="quiz_confirm">Vahvista</string>
     <string name="quiz_cancel">Peruuta</string>
     <string name="quiz_show_me">Näytä luu</string>
+    <string name="quiz_skip">Ohita</string>
 
     <!-- Settings Screen -->
     <string name="settings_title">Asetukset</string>
@@ -52,4 +59,5 @@
     <string name="cd_settings">Asetukset</string>
     <string name="cd_end_quiz">Lopeta harjoitus</string>
     <string name="cd_skeleton_map">Koko luurangon valintakartta</string>
+    <string name="cd_skip">Ohita kysymys</string>
 </resources>

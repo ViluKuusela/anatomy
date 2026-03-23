@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -44,6 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -129,17 +131,57 @@ fun QuizScreen(
     }
 
     if (showEndSessionDialog) {
-        AlertDialog(
-            onDismissRequest = { showEndSessionDialog = false },
-            title = { Text(stringResource(R.string.quiz_exit_title)) },
-            text = { Text(stringResource(R.string.quiz_exit_message)) },
-            confirmButton = { 
-                TextButton(onClick = { if (!isExiting) { isExiting = true; onFinish() } }) { Text(stringResource(R.string.quiz_confirm)) } 
-            },
-            dismissButton = { 
-                TextButton(onClick = { showEndSessionDialog = false }) { Text(stringResource(R.string.quiz_cancel)) } 
+        val title = stringResource(R.string.quiz_exit_title)
+        val message = stringResource(R.string.quiz_exit_message)
+        val confirmText = stringResource(R.string.quiz_confirm)
+        val dismissText = stringResource(R.string.quiz_cancel)
+
+        Dialog(onDismissRequest = { showEndSessionDialog = false }) {
+            Surface(
+                shape = RoundedCornerShape(28.dp),
+                tonalElevation = 6.dp,
+                color = MaterialTheme.colorScheme.surface,
+                modifier = Modifier.fillMaxWidth().padding(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Text(
+                        text = message,
+                        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp, lineHeight = 24.sp),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(32.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        TextButton(
+                            onClick = { showEndSessionDialog = false },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(dismissText, fontSize = 18.sp)
+                        }
+                        TextButton(
+                            onClick = { if (!isExiting) { isExiting = true; onFinish() } },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(confirmText, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
             }
-        )
+        }
     }
 
     LaunchedEffect(answerResult) {
@@ -344,9 +386,9 @@ fun QuizScreen(
                     val isAnswered = answerResult is AnswerResult.Answered
                     val wasCorrect = result?.wasCorrect == true
                     val anatomyLanguageName = when(language) {
-                        Language.LATIN -> stringResource(R.string.lang_latin)
-                        Language.ENGLISH -> stringResource(R.string.lang_english)
-                        Language.FINNISH -> stringResource(R.string.lang_finnish)
+                        Language.LATIN -> stringResource(R.string.lang_in_latin)
+                        Language.ENGLISH -> stringResource(R.string.lang_in_english)
+                        Language.FINNISH -> stringResource(R.string.lang_in_finnish)
                     }
                     Column {
                         OutlinedTextField(
@@ -381,7 +423,7 @@ fun QuizScreen(
             }
         }
 
-        // --- UTILITY AREA (Show Me) ---
+        // --- UTILITY AREA (Show Me & Skip) ---
         Box(modifier = Modifier.fillMaxWidth().height(48.dp), contentAlignment = Alignment.Center) {
             if (answerResult is AnswerResult.Answered) {
                 Button(onClick = viewModel::advance) {
@@ -389,14 +431,25 @@ fun QuizScreen(
                     Text(if (settingsState.enableAutoAdvance) "$nextButtonText ($countdown)" else nextButtonText)
                 }
             } else {
-                Box(modifier = Modifier.pointerInteropFilter {
-                    when (it.action) {
-                        MotionEvent.ACTION_DOWN -> { viewModel.setHintVisible(true); true }
-                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> { viewModel.setHintVisible(false); true }
-                        else -> false
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Box(modifier = Modifier.pointerInteropFilter {
+                        when (it.action) {
+                            MotionEvent.ACTION_DOWN -> { viewModel.setHintVisible(true); true }
+                            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> { viewModel.setHintVisible(false); true }
+                            else -> false
+                        }
+                    }) {
+                        FilledTonalIconButton(onClick = {}) { 
+                            Icon(imageVector = Icons.Default.Visibility, contentDescription = stringResource(R.string.quiz_show_me)) 
+                        }
                     }
-                }) {
-                    FilledTonalIconButton(onClick = {}) { Icon(imageVector = Icons.Default.Visibility, contentDescription = stringResource(R.string.quiz_show_me)) }
+
+                    FilledTonalIconButton(onClick = { viewModel.skip() }) {
+                        Icon(imageVector = Icons.Default.SkipNext, contentDescription = stringResource(R.string.cd_skip))
+                    }
                 }
             }
         }

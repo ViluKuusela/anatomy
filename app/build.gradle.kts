@@ -52,6 +52,10 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.appcompat.resources)
     implementation(libs.androidx.compose.foundation)
+    
+    // Core SplashScreen API
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("androidx.navigation:navigation-compose:2.7.7")

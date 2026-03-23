@@ -15,27 +15,50 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.example.anatomy.data.settings.QuizStartUiState
 import com.example.anatomy.data.settings.SettingsRepository
 import com.example.anatomy.ui.language.Language
 import com.example.anatomy.ui.navigation.AppNavHost
 import com.example.anatomy.ui.theme.AnatomyTheme
+import kotlinx.coroutines.flow.combine
 import java.util.Locale
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Install SplashScreen BEFORE calling super.onCreate()
+        val splashScreen = installSplashScreen()
+        
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         val settingsRepository = SettingsRepository(this)
 
+        // Combine both general and quiz settings to wait for all DataStore reads
+        val appReadyFlow = combine(
+            settingsRepository.settingsFlow,
+            settingsRepository.quizStartUiState
+        ) { settings, quizStart ->
+            Pair(settings, quizStart)
+        }
+
         setContent {
-            // Observe settings flow
-            val settingsData by settingsRepository.settingsFlow.collectAsState(initial = null)
+            // Observe combined settings flow
+            val appState by appReadyFlow.collectAsState(initial = null)
             
+            // Keep the splash screen visible until appState is loaded
+            splashScreen.setKeepOnScreenCondition {
+                appState == null
+            }
+
+            if (appState == null) return@setContent
+
+            val (settingsData, quizStartInitialState) = appState!!
+
             // Determine the locale based on user preference or system default
-            val locale = remember(settingsData?.uiLanguage) {
-                when (settingsData?.uiLanguage) {
+            val locale = remember(settingsData.uiLanguage) {
+                when (settingsData.uiLanguage) {
                     Language.FINNISH -> Locale.forLanguageTag("fi")
                     Language.ENGLISH -> Locale.forLanguageTag("en")
                     else -> Locale.getDefault()
@@ -57,7 +80,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        AppRoot()
+                        AppRoot(quizStartInitialState)
                     }
                 }
             }
@@ -66,6 +89,6 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AppRoot() {
-    AppNavHost()
+fun AppRoot(quizStartInitialState: QuizStartUiState) {
+    AppNavHost(quizStartInitialState)
 }
