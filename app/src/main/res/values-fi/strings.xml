@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Anatomy</string>
+    <string name="app_name">Anatomy Quiz: Bones</string>
 
     <!-- Quiz Start Screen -->
     <string name="quiz_start_title">Anatomiavisa</string>
