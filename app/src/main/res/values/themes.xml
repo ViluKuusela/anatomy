@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <!-- Default theme -->
     <style name="Theme.Anatomy" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!-- Splash Screen theme -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_screen_background</item>
+        
+        <!-- Reference splash_icon.xml, which acts as a wrapper for splash_logo.png -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
+        
+        <item name="windowSplashScreenIconBackgroundColor">@color/splash_screen_background</item>
+        <item name="postSplashScreenTheme">@style/Theme.Anatomy</item>
+    </style>
 </resources>

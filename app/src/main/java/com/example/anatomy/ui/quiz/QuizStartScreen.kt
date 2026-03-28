@@ -298,8 +298,7 @@ fun QuizStartScreen(
                         )
                     }
 
-                    // Anchor the menu to the bottom end (right side) of the parent Box
-                    Box(modifier = Modifier.align(Alignment.BottomEnd)) {
+                    Box(modifier = Modifier.align(Alignment.Center)) {
                         DropdownMenu(
                             expanded = languageExpanded,
                             onDismissRequest = { languageExpanded = false },

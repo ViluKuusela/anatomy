@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 
+        The Splash Screen icon must be 108dp x 108dp total.
+        The actual logo should fit inside the 72dp center "Safe Zone" 
+        to avoid being cropped by the system's circular mask.
+    -->
+    
+    <!-- Transparent background to define the 108dp container -->
+    <item
+        android:width="108dp"
+        android:height="108dp">
+        <color android:color="@android:color/transparent" />
+    </item>
+
+    <!-- 
+        The actual logo centered and scaled to 72dp.
+        Using android:drawable on the item allows it to scale the high-res PNG 
+        correctly into the 72dp area.
+    -->
+    <item
+        android:drawable="@drawable/splash_logo"
+        android:width="72dp"
+        android:height="72dp"
+        android:gravity="center" />
+</layer-list>

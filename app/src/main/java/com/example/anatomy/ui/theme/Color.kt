@@ -3,9 +3,9 @@ package com.example.anatomy.ui.theme
 import androidx.compose.ui.graphics.Color
 
 // Pre-defined semantic colors for quiz answers
-val CorrectAnswerColor = Color(0xFF56B763)
-val FalseAnswerColor = Color(0xFFD32F2F)
-val QuestionHighlightColor = Color(0xFF0021FF)
+val CorrectAnswerColor = Color(0xFF20A833)
+val FalseAnswerColor = Color(0xFFC72E2E)
+val QuestionHighlightColor = Color(0xFF00BCD4)
 
 // Light Theme Colors
 val md_theme_light_primary = Color(0xFF0061A4)
