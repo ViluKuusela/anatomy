@@ -1,15 +1,25 @@
 *.iml
 .gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
+/.idea/
 /build
 /captures
-.externalNativeBuild
-.cxx
+/.kotlin
 local.properties
+
+# Signing files
+*.jks
+*.keystore
+*.p12
+
+# Log files
+*.log
+
+# Generated files
+app/build/
+app/release/
+.cxx/
+.externalNativeBuild/
+
+# Backup files
+*.bak
+*~
