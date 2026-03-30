@@ -135,44 +135,10 @@ fun QuizStartScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .clipToBounds()
-                    .onGloballyPositioned { boxSize = it.size }
-                    .pointerInput(uiState) {
-                        detectTapGestures { offset ->
-                            if (boxSize.width > 0 && boxSize.height > 0) {
-                                val normalizedX = offset.x / boxSize.width
-                                val normalizedY = offset.y / boxSize.height
-
-                                val hitArea = areaMasks.firstOrNull { (_, bitmap) ->
-                                    val centerX = (normalizedX * bitmap.width).toInt()
-                                    val centerY = (normalizedY * bitmap.height).toInt()
-
-                                    var isHit = false
-                                    val radius = 4
-                                    for (dx in -radius..radius) {
-                                        for (dy in -radius..radius) {
-                                            val x = (centerX + dx).coerceIn(0, bitmap.width - 1)
-                                            val y = (centerY + dy).coerceIn(0, bitmap.height - 1)
-                                            if (android.graphics.Color.alpha(bitmap[x, y]) > 0) {
-                                                isHit = true
-                                                break
-                                            }
-                                        }
-                                        if (isHit) break
-                                    }
-                                    isHit
-                                }?.first
-
-                                hitArea?.let { area ->
-                                    viewModel.setAnatomyArea(area)
-                                    onStartQuiz(area, uiState.language, uiState.quizMode)
-                                }
-                            }
-                        }
-                    },
+                    .clipToBounds(),
                 contentAlignment = Alignment.Center
             ) {
-                // Background glow (enhanced visibility in dark mode)
+                // Background glow (centered in the outer box)
                 Box(
                     modifier = Modifier
                         .size(300.dp)
@@ -189,18 +155,59 @@ fun QuizStartScreen(
                         )
                 )
 
-                Image(
-                    painter = painterResource(id = R.drawable.all_bones_base),
-                    contentDescription = stringResource(R.string.cd_skeleton_map),
-                    modifier = Modifier.fillMaxHeight(),
-                )
+                // Wrapper Box that matches the actual skeleton image size
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .wrapContentWidth()
+                        .onGloballyPositioned { boxSize = it.size }
+                        .pointerInput(uiState) {
+                            detectTapGestures { offset ->
+                                if (boxSize.width > 0 && boxSize.height > 0) {
+                                    val normalizedX = offset.x / boxSize.width
+                                    val normalizedY = offset.y / boxSize.height
 
-                // Manual color regions (preserved)
-                ImageMask(R.drawable.all_bones_skull, Color(0x800091C8))
-                ImageMask(R.drawable.all_bones_upper, Color(0x804CE1C3))
-                ImageMask(R.drawable.all_bones_hands, Color(0x7300AFAF))
-                ImageMask(R.drawable.all_bones_lower, Color(0x8012BE7D))
-                ImageMask(R.drawable.all_bones_feet,  Color(0x8000BCD4))
+                                    val hitArea = areaMasks.firstOrNull { (_, bitmap) ->
+                                        val centerX = (normalizedX * bitmap.width).toInt()
+                                        val centerY = (normalizedY * bitmap.height).toInt()
+
+                                        var isHit = false
+                                        val radius = 6
+                                        for (dx in -radius..radius) {
+                                            for (dy in -radius..radius) {
+                                                val x = (centerX + dx).coerceIn(0, bitmap.width - 1)
+                                                val y = (centerY + dy).coerceIn(0, bitmap.height - 1)
+                                                if (android.graphics.Color.alpha(bitmap[x, y]) > 0) {
+                                                    isHit = true
+                                                    break
+                                                }
+                                            }
+                                            if (isHit) break
+                                        }
+                                        isHit
+                                    }?.first
+
+                                    hitArea?.let { area ->
+                                        viewModel.setAnatomyArea(area)
+                                        onStartQuiz(area, uiState.language, uiState.quizMode)
+                                    }
+                                }
+                            }
+                        }
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.all_bones_base),
+                        contentDescription = stringResource(R.string.cd_skeleton_map),
+                        modifier = Modifier.fillMaxHeight(),
+                    )
+
+                    // Manual color regions
+                    ImageMask(R.drawable.all_bones_skull, Color(0x800091C8))
+                    ImageMask(R.drawable.all_bones_upper, Color(0x804CE1C3))
+                    ImageMask(R.drawable.all_bones_hands, Color(0x7300AFAF))
+                    ImageMask(R.drawable.all_bones_lower, Color(0x8012BE7D))
+                    ImageMask(R.drawable.all_bones_feet,  Color(0x8000BCD4))
+                }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
