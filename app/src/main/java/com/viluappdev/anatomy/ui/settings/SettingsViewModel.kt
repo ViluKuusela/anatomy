@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.viluappdev.anatomy.data.settings.SettingsRepository
 import com.viluappdev.anatomy.ui.language.Language
+import com.viluappdev.anatomy.ui.theme.AppThemeMode
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -15,7 +16,12 @@ class SettingsViewModel(
 ) : ViewModel() {
 
     val uiState: StateFlow<SettingsUiState> = repository.settingsFlow.map {
-        SettingsUiState(it.enableAutoAdvance, it.autoNextDelaySeconds, it.uiLanguage)
+        SettingsUiState(
+            enableAutoAdvance = it.enableAutoAdvance,
+            autoNextDelaySeconds = it.autoNextDelaySeconds,
+            uiLanguage = it.uiLanguage,
+            themeMode = it.themeMode
+        )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -37,6 +43,12 @@ class SettingsViewModel(
     fun setUiLanguage(language: Language) {
         viewModelScope.launch {
             repository.setUiLanguage(language)
+        }
+    }
+
+    fun setThemeMode(mode: AppThemeMode) {
+        viewModelScope.launch {
+            repository.setThemeMode(mode)
         }
     }
 }

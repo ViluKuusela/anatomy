@@ -1,6 +1,7 @@
 package com.viluappdev.anatomy.data.settings
 
 import com.viluappdev.anatomy.ui.language.Language
+import com.viluappdev.anatomy.ui.theme.AppThemeMode
 
 /**
  * A data class that represents the general app settings data.
@@ -8,5 +9,6 @@ import com.viluappdev.anatomy.ui.language.Language
 data class SettingsData(
     val enableAutoAdvance: Boolean,
     val autoNextDelaySeconds: Int,
-    val uiLanguage: Language // UI language preference (English or Finnish)
+    val uiLanguage: Language,
+    val themeMode: AppThemeMode
 )

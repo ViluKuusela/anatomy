@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -22,6 +23,7 @@ import com.viluappdev.anatomy.data.settings.SettingsRepository
 import com.viluappdev.anatomy.ui.language.Language
 import com.viluappdev.anatomy.ui.navigation.AppNavHost
 import com.viluappdev.anatomy.ui.theme.AnatomyTheme
+import com.viluappdev.anatomy.ui.theme.AppThemeMode
 import kotlinx.coroutines.flow.combine
 import java.util.Locale
 
@@ -78,9 +80,16 @@ class MainActivity : ComponentActivity() {
                 context.createConfigurationContext(configuration)
             }
 
+            // Determine if dark theme should be used based on settings
+            val useDarkTheme = when (settingsData.themeMode) {
+                AppThemeMode.LIGHT -> false
+                AppThemeMode.DARK -> true
+                AppThemeMode.FOLLOW_SYSTEM -> isSystemInDarkTheme()
+            }
+
             // Provide the localized context to the entire Compose tree
             CompositionLocalProvider(LocalContext provides localizedContext) {
-                AnatomyTheme {
+                AnatomyTheme(darkTheme = useDarkTheme) {
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background

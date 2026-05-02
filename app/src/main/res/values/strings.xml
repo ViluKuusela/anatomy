@@ -43,6 +43,10 @@
     <!-- Settings Screen -->
     <string name="settings_title">Settings</string>
     <string name="settings_ui_language">App Language</string>
+    <string name="settings_theme">App Theme</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_system">System Default</string>
     <string name="settings_auto_advance">Enable auto-advance</string>
     <string name="settings_auto_next_delay">Auto-next delay: %1$d seconds</string>
     <string name="settings_credits_button">Image Credits &amp; Licenses</string>

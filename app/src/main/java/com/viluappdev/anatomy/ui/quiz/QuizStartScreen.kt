@@ -5,7 +5,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,6 +35,7 @@ import androidx.core.graphics.createBitmap
 import com.viluappdev.anatomy.data.settings.QuizMode
 import com.viluappdev.anatomy.ui.language.Language
 import com.viluappdev.anatomy.R
+import com.viluappdev.anatomy.ui.theme.LocalDarkTheme
 import androidx.core.graphics.get
 
 /**
@@ -52,7 +52,9 @@ fun QuizStartScreen(
     val context = LocalContext.current
     var languageExpanded by remember { mutableStateOf(false) }
     var boxSize by remember { mutableStateOf(IntSize.Zero) }
-    val isDark = isSystemInDarkTheme()
+    
+    // Use the custom LocalDarkTheme provided by AnatomyTheme instead of system default
+    val isDark = LocalDarkTheme.current
 
     // Dynamic professional palette
     val primaryColor = if (isDark) Color(0xFF9ECAFF).copy(alpha = 0.9f) else Color(0xFF0061A4)

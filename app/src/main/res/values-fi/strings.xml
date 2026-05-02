@@ -43,6 +43,10 @@
     <!-- Settings Screen -->
     <string name="settings_title">Asetukset</string>
     <string name="settings_ui_language">Sovelluksen kieli</string>
+    <string name="settings_theme">Sovelluksen teema</string>
+    <string name="theme_light">Vaalea</string>
+    <string name="theme_dark">Tumma</string>
+    <string name="theme_system">Järjestelmän oletus</string>
     <string name="settings_auto_advance">Automaattinen eteneminen</string>
     <string name="settings_auto_next_delay">Viive: %1$d sekuntia</string>
     <string name="settings_credits_button">Kuvien tekijät ja lisenssit</string>

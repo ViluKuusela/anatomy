@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.viluappdev.anatomy.R
 import com.viluappdev.anatomy.ui.language.Language
+import com.viluappdev.anatomy.ui.theme.AppThemeMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,6 +29,12 @@ fun SettingsScreen(
     val uiState by viewModel.uiState.collectAsState()
     var showCredits by remember { mutableStateOf(false) }
     var languageExpanded by remember { mutableStateOf(false) }
+    var themeExpanded by remember { mutableStateOf(false) }
+
+    // Resolve theme names early to ensure they follow the app language correctly
+    val lightThemeName = stringResource(R.string.theme_light)
+    val darkThemeName = stringResource(R.string.theme_dark)
+    val systemThemeName = stringResource(R.string.theme_system)
 
     if (showCredits) {
         AlertDialog(
@@ -121,6 +128,52 @@ fun SettingsScreen(
                             onClick = {
                                 viewModel.setUiLanguage(Language.FINNISH)
                                 languageExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            // App Theme Selection
+            Row(
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(stringResource(R.string.settings_theme))
+                Box {
+                    TextButton(onClick = { themeExpanded = true }) {
+                        Text(
+                            when (uiState.themeMode) {
+                                AppThemeMode.LIGHT -> lightThemeName
+                                AppThemeMode.DARK -> darkThemeName
+                                AppThemeMode.FOLLOW_SYSTEM -> systemThemeName
+                            }
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = themeExpanded,
+                        onDismissRequest = { themeExpanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(lightThemeName) },
+                            onClick = {
+                                viewModel.setThemeMode(AppThemeMode.LIGHT)
+                                themeExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(darkThemeName) },
+                            onClick = {
+                                viewModel.setThemeMode(AppThemeMode.DARK)
+                                themeExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(systemThemeName) },
+                            onClick = {
+                                viewModel.setThemeMode(AppThemeMode.FOLLOW_SYSTEM)
+                                themeExpanded = false
                             }
                         )
                     }
