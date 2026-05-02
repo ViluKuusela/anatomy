@@ -6,16 +6,14 @@ plugins {
 
 android {
     namespace = "com.viluappdev.anatomy"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.viluappdev.anatomy"
         minSdk = 26
-        targetSdk = 36
-        versionCode = 4
-        versionName = "1.0.3"
+        targetSdk = 35
+        versionCode = 5
+        versionName = "1.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -41,11 +39,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -64,14 +62,13 @@ dependencies {
     implementation(libs.androidx.appcompat.resources)
     implementation(libs.androidx.compose.foundation)
     
-    // Core SplashScreen API
     implementation("androidx.core:core-splashscreen:1.0.1")
-
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("com.google.accompanist:accompanist-drawablepainter:0.34.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -79,6 +76,4 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-
-
 }

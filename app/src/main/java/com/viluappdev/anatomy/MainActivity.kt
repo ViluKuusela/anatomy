@@ -1,5 +1,6 @@
 package com.viluappdev.anatomy
 
+import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -31,6 +32,10 @@ class MainActivity : ComponentActivity() {
         val splashScreen = installSplashScreen()
         
         super.onCreate(savedInstanceState)
+        
+        // Force portrait mode
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        
         enableEdgeToEdge()
 
         val settingsRepository = SettingsRepository(this)
