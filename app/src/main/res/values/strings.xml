@@ -34,7 +34,7 @@
     <string name="quiz_write_label">Enter bone name %1$s</string>
     <string name="quiz_correct_answer_is">Correct answer: %1$s</string>
     <string name="quiz_exit_title">End Session</string>
-    <string name="quiz_exit_message">Are you sure you want to quit?\nYour progress in this session will be lost.</string>
+    <string name="quiz_exit_message">Are you sure\nyou want to quit?\n\nYour progress in this session will be lost.</string>
     <string name="quiz_confirm">Confirm</string>
     <string name="quiz_cancel">Cancel</string>
     <string name="quiz_show_me">Show Me</string>

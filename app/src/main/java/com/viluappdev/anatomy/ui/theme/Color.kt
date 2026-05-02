@@ -3,9 +3,10 @@ package com.viluappdev.anatomy.ui.theme
 import androidx.compose.ui.graphics.Color
 
 // Pre-defined semantic colors for quiz answers
-val CorrectAnswerColor = Color(0xFF20A833)
+val CorrectAnswerColor = Color(0xFF19D533) // High-vibrancy for translucent overlays
+val CorrectAnswerSolidColor = Color(0xFF009A14) // Deeper green for solid UI elements
 val FalseAnswerColor = Color(0xFFC72E2E)
-val QuestionHighlightColor = Color(0xFF00BCD4)
+val QuestionHighlightColor = Color(0xFF00FCAC)
 
 // Light Theme Colors
 val md_theme_light_primary = Color(0xFF0061A4)

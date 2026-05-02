@@ -5,9 +5,7 @@ import android.graphics.Color
 import android.view.MotionEvent
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Animatable
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
@@ -234,6 +232,18 @@ fun QuizScreen(
         color to alpha
     }
 
+    // A pulsing animation factor to draw attention to the current question bone
+    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
+    val pulseFactor by infiniteTransition.animateFloat(
+        initialValue = 0.5f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "pulseFactor"
+    )
+
     // Atomic update for visual transitions to prevent flickering
     LaunchedEffect(currentBone, answerResult, isHintActive) {
         if (answerResult is AnswerResult.Unanswered) {
@@ -346,9 +356,14 @@ fun QuizScreen(
             contentAlignment = Alignment.Center
         ) {
             val errorBone = if (quizMode == QuizMode.TAP && result != null && !result.wasCorrect) result.selectedOption else null
+            
+            // Pulse the highlight if the bone is currently the "question" or being hinted
+            val isQuestionHighlight = answerResult is AnswerResult.Unanswered && (quizMode != QuizMode.TAP || isHintActive)
+            val currentAlpha = if (isQuestionHighlight) highlightAlphaState.value * pulseFactor else highlightAlphaState.value
+
             BoneImage(
                 bone = currentBone,
-                highlightColor = highlightColorState.value.copy(alpha = highlightAlphaState.value),
+                highlightColor = highlightColorState.value.copy(alpha = currentAlpha),
                 errorBone = errorBone,
                 modifier = Modifier.fillMaxSize().graphicsLayer(
                     scaleX = scale,

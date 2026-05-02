@@ -17,6 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.viluappdev.anatomy.data.Bone
 import com.viluappdev.anatomy.ui.theme.CorrectAnswerColor
+import com.viluappdev.anatomy.ui.theme.CorrectAnswerSolidColor
 import com.viluappdev.anatomy.ui.theme.FalseAnswerColor
 
 /**
@@ -75,7 +76,7 @@ fun AnswerButton(
     onClick: () -> Unit
 ) {
     val containerColor = when {
-        isCorrect -> CorrectAnswerColor
+        isCorrect -> CorrectAnswerSolidColor // Käytetään tummempaa vihreää solid-pinnoilla
         isSelected && !isCorrect -> FalseAnswerColor
         else -> MaterialTheme.colorScheme.surfaceVariant
     }

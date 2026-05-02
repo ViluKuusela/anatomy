@@ -34,7 +34,7 @@
     <string name="quiz_write_label">Kirjoita luun nimi %1$s</string>
     <string name="quiz_correct_answer_is">Oikea vastaus: %1$s</string>
     <string name="quiz_exit_title">Lopeta sessio</string>
-    <string name="quiz_exit_message">Haluatko varmasti lopettaa?\nSession edistyminen menetetään.</string>
+    <string name="quiz_exit_message">Haluatko varmasti lopettaa?\n\nSession edistyminen menetetään.</string>
     <string name="quiz_confirm">Vahvista</string>
     <string name="quiz_cancel">Peruuta</string>
     <string name="quiz_show_me">Näytä luu</string>
