@@ -3,7 +3,7 @@
 
     <!-- Quiz Start Screen -->
     <string name="quiz_start_title">Anatomiavisa</string>
-    <string name="quiz_start_subtitle">Valitse alue aloittaaksesi</string>
+    <string name="quiz_start_subtitle">Valitse kehon alue aloittaaksesi</string>
     <string name="label_type">Tyyppi:</string>
     <string name="label_anatomy_language">Anatomian\nkieli:</string>
     <string name="quiz_mode_tap">KOSKETUS</string>
@@ -30,7 +30,9 @@
     <string name="quiz_next">Seuraava</string>
     <string name="quiz_finish">Valmis</string>
     <string name="quiz_correct">Oikein!</string>
+    <string name="quiz_correct_using_hint">Oikein vihjeen avulla</string>
     <string name="quiz_incorrect_tapped">Väärin! Valitsit: %1$s</string>
+    <string name="quiz_tap_instruction">Etsi: %1$s</string>
     <string name="quiz_write_label">Kirjoita luun nimi %1$s</string>
     <string name="quiz_correct_answer_is">Oikea vastaus: %1$s</string>
     <string name="quiz_exit_title">Lopeta sessio</string>

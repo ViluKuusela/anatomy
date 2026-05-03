@@ -59,6 +59,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.yield
 import kotlin.collections.minus
 import kotlin.collections.plus
+import androidx.core.graphics.get
 
 /**
  * Main quiz logic and UI component.
@@ -262,8 +263,10 @@ fun QuizScreen(
                 highlightAlphaState.snapTo(1f)
             }
         } else if (answerResult is AnswerResult.Answered) {
+            val res = answerResult as AnswerResult.Answered
+            val targetColor = if (quizMode != QuizMode.WRITE || res.wasCorrect || res.wasRevealed) CorrectAnswerColor else FalseAnswerColor
             highlightAlphaState.snapTo(1f)
-            highlightColorState.animateTo(CorrectAnswerColor, animationSpec = tween(300))
+            highlightColorState.animateTo(targetColor, animationSpec = tween(300))
         }
     }
 
@@ -341,7 +344,7 @@ fun QuizScreen(
                                             for (dy in -radius..radius) {
                                                 val px = (centerX + dx).coerceIn(0, bmp.width - 1)
                                                 val py = (centerY + dy).coerceIn(0, bmp.height - 1)
-                                                if (Color.alpha(bmp.getPixel(px, py)) > 0) { found = true; break }
+                                                if (Color.alpha(bmp[px, py]) > 0) { found = true; break }
                                             }
                                             if (found) break
                                         }
@@ -355,7 +358,7 @@ fun QuizScreen(
                 },
             contentAlignment = Alignment.Center
         ) {
-            val errorBone = if (quizMode == QuizMode.TAP && result != null && !result.wasCorrect) result.selectedOption else null
+            val errorBone = if ((quizMode == QuizMode.TAP || quizMode == QuizMode.CHOOSE) && result != null && !result.wasCorrect) result.selectedOption else null
             
             // Pulse the highlight if the bone is currently the "question" or being hinted
             val isQuestionHighlight = answerResult is AnswerResult.Unanswered && (quizMode != QuizMode.TAP || isHintActive)
@@ -374,13 +377,13 @@ fun QuizScreen(
             )
         }
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(16.dp))
 
         // --- INTERACTION AREA ---
         val interactionAreaHeight = when (quizMode) {
             QuizMode.TAP -> 60.dp
-            QuizMode.WRITE -> 120.dp
-            QuizMode.CHOOSE -> 220.dp
+            QuizMode.WRITE -> 100.dp
+            QuizMode.CHOOSE -> 230.dp
         }
 
         Box(modifier = Modifier.fillMaxWidth().height(interactionAreaHeight), contentAlignment = Alignment.TopCenter) {
@@ -425,17 +428,45 @@ fun QuizScreen(
                             } else { OutlinedTextFieldDefaults.colors() }
                         )
                         if (isAnswered) {
-                            Text(text = if (wasCorrect) stringResource(R.string.quiz_correct) else stringResource(R.string.quiz_correct_answer_is, currentBone.getName(language)), color = if (wasCorrect) CorrectAnswerColor else FalseAnswerColor, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(top = 4.dp))
+                            val displayText = when {
+                                wasCorrect && result?.wasRevealed == true -> stringResource(R.string.quiz_correct_using_hint)
+                                wasCorrect -> stringResource(R.string.quiz_correct)
+                                else -> stringResource(R.string.quiz_correct_answer_is, currentBone.getName(language))
+                            }
+                            Text(
+                                text = displayText,
+                                color = if (wasCorrect) CorrectAnswerColor else FalseAnswerColor,
+                                style = MaterialTheme.typography.bodyLarge,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+                            )
                         } else if (isHintActive) {
-                            Text(text = currentBone.getName(language), color = CorrectAnswerColor, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 4.dp))
+                            Text(
+                                text = currentBone.getName(language),
+                                color = CorrectAnswerColor,
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+                            )
                         }
                     }
                 }
                 QuizMode.TAP -> {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(text = currentBone.getName(language), style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center)
+                        Text(
+                            text = stringResource(R.string.quiz_tap_instruction, currentBone.getName(language).lowercase()),
+                            style = MaterialTheme.typography.titleLarge,
+                            maxLines = 1,
+                            textAlign = TextAlign.Center
+                        )
                         if (answerResult is AnswerResult.Answered && result != null) {
-                            Text(text = if (result.wasCorrect) stringResource(R.string.quiz_correct) else stringResource(R.string.quiz_incorrect_tapped, result.selectedOption?.getName(language) ?: ""), color = if (result.wasCorrect) CorrectAnswerColor else FalseAnswerColor, style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
+                            val displayText = when {
+                                result.wasCorrect && result.wasRevealed -> stringResource(R.string.quiz_correct_using_hint)
+                                result.wasCorrect -> stringResource(R.string.quiz_correct)
+                                else -> stringResource(R.string.quiz_incorrect_tapped, result.selectedOption?.getName(language) ?: "")
+                            }
+                            Text(text = displayText, color = if (result.wasCorrect) CorrectAnswerColor else FalseAnswerColor, style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
                         }
                     }
                 }
@@ -472,5 +503,7 @@ fun QuizScreen(
                 }
             }
         }
+
+        Spacer(Modifier.height(32.dp))
     }
 }

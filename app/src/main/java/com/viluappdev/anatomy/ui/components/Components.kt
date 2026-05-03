@@ -47,7 +47,7 @@ fun BoneImage(
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 colorFilter = ColorFilter.tint(FalseAnswerColor),
-                alpha = 0.5f,
+                alpha = 0.7f,
                 contentScale = ContentScale.Fit
             )
         }
@@ -58,7 +58,7 @@ fun BoneImage(
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             colorFilter = ColorFilter.tint(highlightColor),
-            alpha = 0.5f,
+            alpha = 0.7f,
             contentScale = ContentScale.Fit
         )
     }

@@ -3,7 +3,7 @@
 
     <!-- Quiz Start Screen -->
     <string name="quiz_start_title">Anatomy Quiz</string>
-    <string name="quiz_start_subtitle">Tap a region to start</string>
+    <string name="quiz_start_subtitle">Tap a body region to start</string>
     <string name="label_type">Type:</string>
     <string name="label_anatomy_language">Anatomy\nLanguage:</string>
     <string name="quiz_mode_tap">Tap</string>
@@ -30,7 +30,9 @@
     <string name="quiz_next">Next</string>
     <string name="quiz_finish">Finish</string>
     <string name="quiz_correct">Correct!</string>
+    <string name="quiz_correct_using_hint">Correct using a hint!</string>
     <string name="quiz_incorrect_tapped">Incorrect! You tapped: %1$s</string>
+    <string name="quiz_tap_instruction">Tap the %1$s</string>
     <string name="quiz_write_label">Enter bone name %1$s</string>
     <string name="quiz_correct_answer_is">Correct answer: %1$s</string>
     <string name="quiz_exit_title">End Session</string>
