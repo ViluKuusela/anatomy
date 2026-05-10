@@ -45,6 +45,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import com.viluappdev.anatomy.data.BoneRepository
 import com.viluappdev.anatomy.data.settings.QuizMode
 import com.viluappdev.anatomy.R
@@ -219,8 +221,19 @@ fun QuizScreen(
         }
         return
     }
+    // Immediate disable when currentBone changes
+    var isUtilityDisabled by remember(session.currentBone) { mutableStateOf(session.currentBone != null) }
 
     val currentBone = session.currentBone!!
+
+    // Debounce utility buttons when question changes
+    LaunchedEffect(currentBone) {
+        isUtilityDisabled = true
+        delay(1000)
+        isUtilityDisabled = false
+    }
+
+
     val result = answerResult as? AnswerResult.Answered
     val options = remember(currentBone) { (bones - currentBone).shuffled().take(3).plus(currentBone).shuffled() }
     var writtenAnswer by remember { mutableStateOf("") }
@@ -486,18 +499,25 @@ fun QuizScreen(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Box(modifier = Modifier.pointerInteropFilter {
+                        if (isUtilityDisabled) return@pointerInteropFilter true
                         when (it.action) {
                             MotionEvent.ACTION_DOWN -> { viewModel.setHintVisible(true); true }
                             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> { viewModel.setHintVisible(false); true }
                             else -> false
                         }
                     }) {
-                        FilledTonalIconButton(onClick = {}) { 
+                        FilledTonalIconButton(
+                            onClick = {},
+                            enabled = !isUtilityDisabled
+                        ) {
                             Icon(imageVector = Icons.Default.Visibility, contentDescription = stringResource(R.string.quiz_show_me)) 
                         }
                     }
 
-                    FilledTonalIconButton(onClick = { viewModel.skip() }) {
+                    FilledTonalIconButton(
+                        onClick = { viewModel.skip() },
+                        enabled = !isUtilityDisabled
+                    ) {
                         Icon(imageVector = Icons.Default.SkipNext, contentDescription = stringResource(R.string.cd_skip))
                     }
                 }
