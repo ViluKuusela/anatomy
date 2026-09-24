@@ -6,14 +6,14 @@ plugins {
 
 android {
     namespace = "com.viluappdev.anatomy"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.viluappdev.anatomy"
         minSdk = 26
-        targetSdk = 35
-        versionCode = 6
-        versionName = "1.0.5"
+        targetSdk = 36
+        versionCode = 8
+        versionName = "1.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
